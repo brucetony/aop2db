@@ -1,5 +1,6 @@
 # Config file for automatic testing at travis-ci.com
-sudo: false
+os: linux
+dist: xenial
 cache: pip
 
 language: python
