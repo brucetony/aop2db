@@ -45,5 +45,5 @@ guarantee of maintenance, support, or back-up of data.
 .. |pypi_license| image:: https://img.shields.io/pypi/l/aop2db.svg
     :alt: MIT
 
-.. |coverage| image:: https://app.codecov.io/gh/brucetony/aop2db/coverage.svg?branch=master
+.. |coverage| image:: https://codecov.io/gh/brucetony/aop2db/branch/master/graphs/badge.svg?
     :alt: Coverage Status
