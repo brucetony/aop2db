@@ -12,10 +12,11 @@ import xmltodict
 from tqdm import tqdm
 from datetime import datetime
 from typing import Union, Optional, Dict
+
 from sqlalchemy import insert
 
 from aop2db.defaults import AOP_XML_FILE, TAXONOMY_CACHE
-from aop2db.orm.manager import session, engine
+from aop2db.orm.manager import session, engine, rebuild_database
 from aop2db.constants import AOP_XML_DOWNLOAD, TAX_ID_LOOKUP, ID, AOP_ID, TAXONOMY, EVIDENCE, SEX, LIFESTAGE, \
     CREATION, LAST_MODIFIED, CREATION_TIMESTAMP, LM_TIMESTAMP, APPLICABILITY
 from aop2db.orm.models import Chemical, Stressor, Synonym, KeyEvent, KeyEventRelationship, CellTerm, OrganTerm, \
@@ -30,6 +31,8 @@ __all__ = ['import_aop_data']
 
 def import_aop_data() -> None:
     """Parse and import AOP Wiki content into a relational database."""
+    rebuild_database()
+
     ai = AopImporter()
     ai.import_aop_data()
 
