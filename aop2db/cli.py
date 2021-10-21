@@ -1,14 +1,14 @@
 """Console script for aop2db."""
 import sys
-import logging
 import click
+import logging
 
 from aop2db.aop.importer import import_aop_data
 
 logger = logging.getLogger(__name__)
 
 
-@click.group(help=f"ZETOMAP Database Framework Command Line Utilities on {sys.executable}")
+@click.group(help=f"AOP2DB Database Framework Command Line Utilities on {sys.executable}")
 @click.version_option()
 def main():
     """Console script for aop2db."""
