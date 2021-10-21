@@ -14,7 +14,7 @@ class TestImporter:
 
     def test_importer(self):
         """Test the general import method."""
-        # import_aop_data()
+        import_aop_data()
 
         assert database_exists(CONN)
 
