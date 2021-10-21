@@ -1,7 +1,6 @@
 """Collection of methods for getting and setting values in the config file."""
-import os
 import logging
-
+import os
 from configparser import ConfigParser
 
 from aop2db.constants import DATABASE
@@ -20,7 +19,7 @@ def __check_config_file() -> bool:
 
 
 def get_conn() -> str:
-    """Retrieves CONN in the config file. If no config file, it makes one and sets the CONN to SQLite by default."""
+    """Retrieve CONN in the config file. If no config file, it makes one and sets the CONN to SQLite by default."""
     __check_config_file()
     config = ConfigParser()
     config.read(CONFIG)
@@ -38,6 +37,7 @@ def get_conn() -> str:
 
 
 def set_conn(conn_string: str) -> None:
+    """Set the relational database connection URL."""
     get_conn()  # To make sure config file is there
     config = ConfigParser()
     config.read(CONFIG)

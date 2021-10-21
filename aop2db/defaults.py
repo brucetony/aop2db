@@ -1,11 +1,10 @@
 """Default paths and variables."""
 
-import os
 import logging
-
+import os
 from pathlib import Path
-from aop2db.constants import AOP_XML_DOWNLOAD
 
+from aop2db.constants import AOP_XML_DOWNLOAD
 
 logger = logging.getLogger(__name__)
 

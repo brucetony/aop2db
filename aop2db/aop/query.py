@@ -1,13 +1,13 @@
 """Query the AOP tables."""
 import pandas as pd
 
-from sqlalchemy import select
-
 from aop2db.orm.manager import CONN
-from aop2db.orm.models import Chemical, Stressor, Synonym, CellTerm, OrganTerm, Taxonomy, BiologicalObject, \
-    BiologicalAction, BiologicalProcess, BiologicalEvent, KeyEvent, TaxonomyKeyEvent, Aop, AopKeyEvent, \
-    LifeStageKeyEvent, LifeStage, KeyEventRelationship, TaxonomyKeyEventRelationship, LifeStageKeyEventRelationship, \
-    LifeStageAop, AopStressor, Sex
+from aop2db.orm.models import Aop, AopKeyEvent, AopStressor, BiologicalAction, BiologicalEvent, BiologicalObject, \
+    BiologicalProcess, CellTerm, Chemical, KeyEvent, KeyEventRelationship, LifeStage, LifeStageAop, \
+    LifeStageKeyEvent, LifeStageKeyEventRelationship, OrganTerm, Sex, Stressor, Synonym, Taxonomy, \
+    TaxonomyKeyEvent, TaxonomyKeyEventRelationship
+
+from sqlalchemy import select
 
 
 def get_aops(verbose: bool = False) -> pd.DataFrame:
@@ -30,19 +30,19 @@ def get_aops(verbose: bool = False) -> pd.DataFrame:
         AopKeyEvent.key_event_type,
         Stressor.id.label("stressor_id"),
         AopStressor.evidence.label("stressor_evidence"),
-        LifeStage.life_stage
+        LifeStage.life_stage,
     ).join(
-        AopStressor, Aop.id == AopStressor.aop_id, isouter=True
+        AopStressor, Aop.id == AopStressor.aop_id, isouter=True,
     ).join(
-        Stressor, isouter=True
+        Stressor, isouter=True,
     ).join(
-        AopKeyEvent, Aop.id == AopKeyEvent.aop_id, isouter=True
+        AopKeyEvent, Aop.id == AopKeyEvent.aop_id, isouter=True,
     ).join(
-        KeyEvent, isouter=True
+        KeyEvent, isouter=True,
     ).join(
-        LifeStageAop, Aop.id == LifeStageAop.aop_id, isouter=True
+        LifeStageAop, Aop.id == LifeStageAop.aop_id, isouter=True,
     ).join(
-        LifeStage, isouter=True
+        LifeStage, isouter=True,
     )
 
     if verbose:
@@ -70,12 +70,14 @@ def get_bio_events(verbose: bool = False) -> pd.DataFrame:
         BiologicalObject.name.label("bio_object"),
         KeyEvent.id.label("key_event_id"),
     ).select_from(BiologicalEvent).join(
-        BiologicalAction, BiologicalAction.id == BiologicalEvent.bio_action_id, isouter=True
+        BiologicalAction, BiologicalAction.id == BiologicalEvent.bio_action_id, isouter=True,
     ).join(
-        BiologicalProcess, BiologicalProcess.id == BiologicalEvent.bio_process_id, isouter=True
+        BiologicalProcess, BiologicalProcess.id == BiologicalEvent.bio_process_id, isouter=True,
     ).join(
-        BiologicalObject, BiologicalObject.id == BiologicalEvent.bio_object_id, isouter=True
-    ).join(BiologicalEvent.key_events, isouter=True)
+        BiologicalObject, BiologicalObject.id == BiologicalEvent.bio_object_id, isouter=True,
+    ).join(
+        BiologicalEvent.key_events, isouter=True,
+    )
 
     if verbose:
         print(stmt)
@@ -100,15 +102,15 @@ def get_key_event_relationships(species: int = None, verbose: bool = False) -> p
     stmt = select(
         KeyEventRelationship,
         Taxonomy.tax_id,
-        LifeStage.life_stage
+        LifeStage.life_stage,
     ).join(
-        TaxonomyKeyEventRelationship, KeyEventRelationship.id == TaxonomyKeyEventRelationship.ker_id, isouter=True
+        TaxonomyKeyEventRelationship, KeyEventRelationship.id == TaxonomyKeyEventRelationship.ker_id, isouter=True,
     ).join(
-        Taxonomy, isouter=True
+        Taxonomy, isouter=True,
     ).join(
-        LifeStageKeyEventRelationship, KeyEventRelationship.id == LifeStageKeyEventRelationship.ker_id, isouter=True
+        LifeStageKeyEventRelationship, KeyEventRelationship.id == LifeStageKeyEventRelationship.ker_id, isouter=True,
     ).join(
-        LifeStage, isouter=True
+        LifeStage, isouter=True,
     )
 
     if species:
@@ -155,21 +157,21 @@ def get_key_events(bio_events: bool = False,
             OrganTerm.name.label("organ_term"),
             Stressor.id.label("stressor_id"),
             Taxonomy.tax_id,
-            LifeStage.life_stage
+            LifeStage.life_stage,
         ).join(
-            CellTerm, isouter=True
+            CellTerm, isouter=True,
         ).join(
-            OrganTerm, isouter=True
+            OrganTerm, isouter=True,
         ).join(
-            KeyEvent.stressors, isouter=True
+            KeyEvent.stressors, isouter=True,
         ).join(
-            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True
+            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True,
         ).join(
-            Taxonomy, isouter=True
+            Taxonomy, isouter=True,
         ).join(
-            LifeStageKeyEvent, KeyEvent.id == LifeStageKeyEvent.key_event_id, isouter=True
+            LifeStageKeyEvent, KeyEvent.id == LifeStageKeyEvent.key_event_id, isouter=True,
         ).join(
-            LifeStage, isouter=True
+            LifeStage, isouter=True,
         )
 
     else:  # Simplified version
@@ -183,13 +185,13 @@ def get_key_events(bio_events: bool = False,
             OrganTerm.name.label("organ_term"),
             Taxonomy.tax_id,
         ).join(
-            CellTerm, isouter=True
+            CellTerm, isouter=True,
         ).join(
-            OrganTerm, isouter=True
+            OrganTerm, isouter=True,
         ).join(
-            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True
+            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True,
         ).join(
-            Taxonomy, isouter=True
+            Taxonomy, isouter=True,
         )
 
     if species:
@@ -228,9 +230,9 @@ def get_stressors(verbose: bool = False) -> pd.DataFrame:
         Stressor.aop_id,
         Stressor.name,
         Chemical.name.label("chemical_name"),
-        Chemical.casrn.label("chemical_casrn")
+        Chemical.casrn.label("chemical_casrn"),
     ).join(
-        Stressor.chemicals, isouter=True
+        Stressor.chemicals, isouter=True,
     )
 
     if verbose:

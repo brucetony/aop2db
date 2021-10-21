@@ -1,28 +1,28 @@
 """AOP Wiki module."""
 
-import os
-import re
 import gzip
 import json
 import logging
-import requests
+import os
+import re
+from datetime import datetime
+from typing import Dict, Optional, Union
 
+import requests
 import xmltodict
 
-from tqdm import tqdm
-from datetime import datetime
-from typing import Union, Optional, Dict
+
+from aop2db.constants import AOP_ID, AOP_XML_DOWNLOAD, APPLICABILITY, CREATION, CREATION_TIMESTAMP, EVIDENCE, ID, \
+    LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, SEX, TAXONOMY, TAX_ID_LOOKUP
+from aop2db.defaults import AOP_XML_FILE, TAXONOMY_CACHE
+from aop2db.orm.manager import engine, rebuild_database, session
+from aop2db.orm.models import Aop, AopKer, AopKeyEvent, AopStressor, BiologicalAction, BiologicalEvent, \
+    BiologicalObject, BiologicalProcess, CellTerm, Chemical, KeyEvent, KeyEventRelationship, LifeStage, LifeStageAop, \
+    LifeStageKeyEvent, LifeStageKeyEventRelationship, OrganTerm, Sex, SexAop, SexKeyEvent, SexKeyEventRelationship, \
+    Stressor, Synonym, Taxonomy, TaxonomyAop, TaxonomyKeyEvent, TaxonomyKeyEventRelationship
 
 from sqlalchemy import insert
-
-from aop2db.defaults import AOP_XML_FILE, TAXONOMY_CACHE
-from aop2db.orm.manager import session, engine, rebuild_database
-from aop2db.constants import AOP_XML_DOWNLOAD, TAX_ID_LOOKUP, ID, AOP_ID, TAXONOMY, EVIDENCE, SEX, LIFESTAGE, \
-    CREATION, LAST_MODIFIED, CREATION_TIMESTAMP, LM_TIMESTAMP, APPLICABILITY
-from aop2db.orm.models import Chemical, Stressor, Synonym, KeyEvent, KeyEventRelationship, CellTerm, OrganTerm, \
-    LifeStage, Sex, Taxonomy, BiologicalObject, BiologicalAction, BiologicalProcess, BiologicalEvent, Aop, AopKer, \
-    SexAop, SexKeyEventRelationship, SexKeyEvent, TaxonomyKeyEventRelationship, TaxonomyAop, TaxonomyKeyEvent, \
-    LifeStageKeyEvent, LifeStageKeyEventRelationship, LifeStageAop, AopStressor, AopKeyEvent
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -44,18 +44,18 @@ class AopImporter:
         TAXONOMY: {
             KeyEvent: TaxonomyKeyEvent,
             KeyEventRelationship: TaxonomyKeyEventRelationship,
-            Aop: TaxonomyAop
+            Aop: TaxonomyAop,
         },
         SEX: {
             KeyEvent: SexKeyEvent,
             KeyEventRelationship: SexKeyEventRelationship,
-            Aop: SexAop
+            Aop: SexAop,
         },
         LIFESTAGE: {
             KeyEvent: LifeStageKeyEvent,
             KeyEventRelationship: LifeStageKeyEventRelationship,
-            Aop: LifeStageAop
-        }
+            Aop: LifeStageAop,
+        },
     }
 
     def __init__(self):
@@ -121,7 +121,7 @@ class AopImporter:
             kes = {
                 "key_events": aop.pop("key-events", None),
                 "aos": aop.pop("adverse-outcome", None),  # Adverse Outcomes
-                "mies": aop.pop("molecular-initiating-event", None)  # Molecular Initiating Events
+                "mies": aop.pop("molecular-initiating-event", None),  # Molecular Initiating Events
             }
 
             # Create AOP object
@@ -131,7 +131,7 @@ class AopImporter:
 
             if applicability:
                 aop_entry = self.__parse_applicability(applicability, aop_entry)
-                
+
             if stressors:
                 aop_entry = self.__extract_aop_stressors(stressors, aop_entry, stressor_mapper)
 
@@ -505,7 +505,7 @@ class AopImporter:
 
         chem_mapper = self.__get_aop_mapper(Chemical)
         if not chem_mapper:  # Chemicals weren't imported
-            logger.warning("""Attempting to import stressor data into DB before chemicals. Stressors will not be 
+            logger.warning("""Attempting to import stressor data into DB before chemicals. Stressors will not be
             properly mapped to chemicals!""")
 
         stressor_entries = []
@@ -607,7 +607,6 @@ class AopImporter:
 
     def __parse_bio_classes(self, bio_classes: dict) -> dict:
         """Extract bio class data into dictionaries. Returns dict of metadata information."""
-
         parsed_bio_data = dict()
         for bio_class, metadata in bio_classes.items():  # All bio classes structured similarly
             logger.info(f"Parsing {bio_class}")

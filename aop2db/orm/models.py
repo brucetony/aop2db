@@ -1,9 +1,8 @@
 """Model definitions."""
 
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, TEXT, Table
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime, TEXT
-
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -32,6 +31,7 @@ stressor_ke = Table(
 
 class Chemical(Base):
     """Table with all AOP chemical compounds."""
+
     __tablename__ = "aop_chemical"
 
     id = Column(Integer, primary_key=True)
@@ -48,6 +48,7 @@ class Chemical(Base):
 
 class Stressor(Base):
     """Table with all AOP stressors i.e. chemicals that affect AOPs."""
+
     __tablename__ = "aop_stressor"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -64,6 +65,7 @@ class Stressor(Base):
 
 class Synonym(Base):
     """Table with all AOP synonyms used for the chemical compounds."""
+
     __tablename__ = "aop_chemical_synonym"
     id = Column(Integer, primary_key=True, autoincrement=True)
     term = Column(String(255))
@@ -74,6 +76,7 @@ class Synonym(Base):
 
 class CellTerm(Base):
     """Cell terms for KeyEvents."""
+
     __tablename__ = "aop_cell_term"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -86,6 +89,7 @@ class CellTerm(Base):
 
 class OrganTerm(Base):
     """Organ terms for KeyEvents."""
+
     __tablename__ = "aop_organ_term"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -96,6 +100,7 @@ class OrganTerm(Base):
 
 class LifeStage(Base):
     """Life stage terms for AOPs and KeyEvents."""
+
     __tablename__ = "aop_life_stage"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -109,6 +114,7 @@ class LifeStage(Base):
 
 class Sex(Base):
     """Sex terms for AOPs and KeyEvents."""
+
     __tablename__ = "aop_sex"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -122,6 +128,7 @@ class Sex(Base):
 
 class Taxonomy(Base):
     """Taxonomy terms for AOPs and KeyEvents."""
+
     __tablename__ = "aop_taxonomy"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -140,6 +147,7 @@ class Taxonomy(Base):
 
 class BiologicalObject(Base):
     """Biological objects referenced by KeyEvents."""
+
     __tablename__ = "aop_bio_object"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -153,6 +161,7 @@ class BiologicalObject(Base):
 
 class BiologicalProcess(Base):
     """Biological processes referenced by KeyEvents."""
+
     __tablename__ = "aop_bio_process"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -166,6 +175,7 @@ class BiologicalProcess(Base):
 
 class BiologicalAction(Base):
     """Biological actions referenced by KeyEvents."""
+
     __tablename__ = "aop_bio_action"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -179,6 +189,7 @@ class BiologicalAction(Base):
 
 class BiologicalEvent(Base):
     """Biological events are some combination of a biological process, biological action, and biological object."""
+
     __tablename__ = "aop_bio_event"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -196,6 +207,7 @@ class BiologicalEvent(Base):
 
 class KeyEvent(Base):
     """A discrete biological change that can be measured."""
+
     __tablename__ = "aop_key_event"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -241,6 +253,7 @@ class KeyEvent(Base):
 
 class KeyEventRelationship(Base):
     """An evidence-based relationship between two key events."""
+
     __tablename__ = "aop_key_event_relationship"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -281,6 +294,7 @@ class Aop(Base):
     An adverse outcome pathway is a chain of Key Events starting with a molecular initiating events and ending with
     an adverse outcome.
     """
+
     __tablename__ = "aop"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -324,6 +338,7 @@ class Aop(Base):
 # Key Event Links
 class SexKeyEvent(Base):
     """Association table connecting Sex and KeyEvent models."""
+
     __tablename__ = "aop_sex_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -337,6 +352,7 @@ class SexKeyEvent(Base):
 
 class LifeStageKeyEvent(Base):
     """Association table connecting LifeStage and KeyEvent models."""
+
     __tablename__ = "aop_life_stage_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -350,6 +366,7 @@ class LifeStageKeyEvent(Base):
 
 class TaxonomyKeyEvent(Base):
     """Association table connecting Taxonomy and KeyEvent models."""
+
     __tablename__ = "aop_taxonomy_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -364,6 +381,7 @@ class TaxonomyKeyEvent(Base):
 # Key Event Relationship Links
 class SexKeyEventRelationship(Base):
     """Association table connecting Sex and KeyEventRelationship models."""
+
     __tablename__ = "aop_sex_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -377,6 +395,7 @@ class SexKeyEventRelationship(Base):
 
 class LifeStageKeyEventRelationship(Base):
     """Association table connecting LifeStage and KeyEventRelationship models."""
+
     __tablename__ = "aop_life_stage_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -390,6 +409,7 @@ class LifeStageKeyEventRelationship(Base):
 
 class TaxonomyKeyEventRelationship(Base):
     """Association table connecting Taxonomy and KeyEventRelationship models."""
+
     __tablename__ = "aop_taxonomy_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -404,6 +424,7 @@ class TaxonomyKeyEventRelationship(Base):
 # AOP Links
 class SexAop(Base):
     """Association table connecting Sex and Aop models."""
+
     __tablename__ = "aop_sex_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -417,6 +438,7 @@ class SexAop(Base):
 
 class LifeStageAop(Base):
     """Association table connecting LifeStage and Aop models."""
+
     __tablename__ = "aop_life_stage_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -430,6 +452,7 @@ class LifeStageAop(Base):
 
 class TaxonomyAop(Base):
     """Association table connecting Taxonomy and Aop models."""
+
     __tablename__ = "aop_taxonomy_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -443,6 +466,7 @@ class TaxonomyAop(Base):
 
 class AopKer(Base):
     """Association table connecting KeyEventRelationship and Aop models."""
+
     __tablename__ = "aop_kers_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -458,6 +482,7 @@ class AopKer(Base):
 
 class AopKeyEvent(Base):
     """Association table connecting KeyEvent and Aop models."""
+
     __tablename__ = "aop_key_event_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -472,6 +497,7 @@ class AopKeyEvent(Base):
 
 class AopStressor(Base):
     """Association table connecting Stressor and Aop models."""
+
     __tablename__ = "aop_stressor_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

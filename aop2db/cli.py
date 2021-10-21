@@ -1,12 +1,13 @@
 """Console script for aop2db."""
-import sys
-import click
 import logging
+import sys
+
+import click
+
+from aop2db.aop.importer import import_aop_data
+from aop2db.utils import set_conn
 
 from sqlalchemy import create_engine
-
-from aop2db.utils import set_conn
-from aop2db.aop.importer import import_aop_data
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +21,14 @@ def main():
 
 @main.command()
 def load():
-    """Downloads the AO wiki data and imports into the relational database."""
+    """Download the AO wiki data and imports into the relational database."""
     import_aop_data()
 
 
 @main.command()
 @click.argument('conn_str')
 def conn(conn_str: str):
-    """Sets the SQL connection string in the configuration file.
+    """Set the SQL connection string in the configuration file.
 
     conn_str
         A python compatible SQL connection string. Drivers (e.g. pymysql) will need to be downloaded manually.
