@@ -6,11 +6,7 @@ Welcome to aop2db's documentation!
    :caption: Contents:
 
    readme
-   installation
    usage
-   modules
-   contributing
-   history
 
 Indices and tables
 ==================
