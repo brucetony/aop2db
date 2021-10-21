@@ -30,9 +30,11 @@ CONFIG = os.path.join(BASE_DIR, 'config.ini')
 
 # Logging Configuration
 LOG_FILE_PATH = os.path.join(LOG_DIR, "aop2db.log")
-logging.basicConfig(filename=LOG_FILE_PATH,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.DEBUG)
+logging.basicConfig(
+    filename=LOG_FILE_PATH,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+)
 
 # SQL Connection
 

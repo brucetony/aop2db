@@ -4,6 +4,17 @@ AOP2DB | docs | |python_versions|
 
 Package for compiling the adverse outcome pathway (AOP) data into a relational database. The data is publicly available at the `AOP website <https://aopwiki.org/>`_.
 
+Installation |pypi_version| |pypi_license|
+==========================================
+
+``aop2db`` can be directly installed from PyPi with pip::
+
+    $ pip install aop2db
+
+Usage
+=====
+
+
 
 .. | pypi_version | image:: https://img.shields.io/pypi/v/aop2db.svg
     :target: https://pypi.python.org/pypi/aop2db

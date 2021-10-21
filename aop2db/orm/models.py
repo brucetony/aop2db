@@ -1,48 +1,37 @@
 """Model definitions."""
 
-from sqlalchemy import inspect
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import as_declarative
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Text, DateTime, TEXT
-
-from aop2db.constants import SERIES, PLATFORM
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime, TEXT
 
 
-@as_declarative()
-class Base:
-    def asdict(self):
-        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
-
-
-# GEO
-platform_series = Table('platform_series_association', Base.metadata,
-                        Column('platform_id', ForeignKey('platforms.id')),
-                        Column('series_id', ForeignKey('series.id'))
-                        )
-
-sample_series = Table('sample_series_association', Base.metadata,
-                      Column('sample_id', ForeignKey('samples.id')),
-                      Column('series_id', ForeignKey('series.id'))
-                      )
+Base = declarative_base()
 
 # AOP
-stressor_chemical = Table('stressor_chemical_association', Base.metadata,
-                          Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True),
-                          Column('chemical_id', ForeignKey('aop_chemical.id'), primary_key=True)
-                          )
+stressor_chemical = Table(
+    'stressor_chemical_association',
+    Base.metadata,
+    Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True),
+    Column('chemical_id', ForeignKey('aop_chemical.id'), primary_key=True),
+)
 
-ke_be = Table('key_event_bio_event_association', Base.metadata,
-              Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
-              Column('bio_event_id', ForeignKey('aop_bio_event.id'), primary_key=True)
-              )
+ke_be = Table(
+    'key_event_bio_event_association',
+    Base.metadata,
+    Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
+    Column('bio_event_id', ForeignKey('aop_bio_event.id'), primary_key=True),
+)
 
-stressor_ke = Table('stressor_key_event_association', Base.metadata,
-                    Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
-                    Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True)
-                    )
+stressor_ke = Table(
+    'stressor_key_event_association',
+    Base.metadata,
+    Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
+    Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True),
+)
 
 
 class Chemical(Base):
+    """Table with all AOP chemical compounds."""
     __tablename__ = "aop_chemical"
 
     id = Column(Integer, primary_key=True)
@@ -58,6 +47,7 @@ class Chemical(Base):
 
 
 class Stressor(Base):
+    """Table with all AOP stressors i.e. chemicals that affect AOPs."""
     __tablename__ = "aop_stressor"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -73,6 +63,7 @@ class Stressor(Base):
 
 
 class Synonym(Base):
+    """Table with all AOP synonyms used for the chemical compounds."""
     __tablename__ = "aop_chemical_synonym"
     id = Column(Integer, primary_key=True, autoincrement=True)
     term = Column(String(255))
@@ -82,7 +73,7 @@ class Synonym(Base):
 
 
 class CellTerm(Base):
-    """Cell terms for KeyEvents"""
+    """Cell terms for KeyEvents."""
     __tablename__ = "aop_cell_term"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -94,7 +85,7 @@ class CellTerm(Base):
 
 
 class OrganTerm(Base):
-    """Organ terms for KeyEvents"""
+    """Organ terms for KeyEvents."""
     __tablename__ = "aop_organ_term"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -104,6 +95,7 @@ class OrganTerm(Base):
 
 
 class LifeStage(Base):
+    """Life stage terms for AOPs and KeyEvents."""
     __tablename__ = "aop_life_stage"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -116,6 +108,7 @@ class LifeStage(Base):
 
 
 class Sex(Base):
+    """Sex terms for AOPs and KeyEvents."""
     __tablename__ = "aop_sex"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -128,6 +121,7 @@ class Sex(Base):
 
 
 class Taxonomy(Base):
+    """Taxonomy terms for AOPs and KeyEvents."""
     __tablename__ = "aop_taxonomy"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -145,6 +139,7 @@ class Taxonomy(Base):
 
 
 class BiologicalObject(Base):
+    """Biological objects referenced by KeyEvents."""
     __tablename__ = "aop_bio_object"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -157,6 +152,7 @@ class BiologicalObject(Base):
 
 
 class BiologicalProcess(Base):
+    """Biological processes referenced by KeyEvents."""
     __tablename__ = "aop_bio_process"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -169,6 +165,7 @@ class BiologicalProcess(Base):
 
 
 class BiologicalAction(Base):
+    """Biological actions referenced by KeyEvents."""
     __tablename__ = "aop_bio_action"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -181,6 +178,7 @@ class BiologicalAction(Base):
 
 
 class BiologicalEvent(Base):
+    """Biological events are some combination of a biological process, biological action, and biological object."""
     __tablename__ = "aop_bio_event"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -197,6 +195,7 @@ class BiologicalEvent(Base):
 
 
 class KeyEvent(Base):
+    """A discrete biological change that can be measured."""
     __tablename__ = "aop_key_event"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -241,6 +240,7 @@ class KeyEvent(Base):
 
 
 class KeyEventRelationship(Base):
+    """An evidence-based relationship between two key events."""
     __tablename__ = "aop_key_event_relationship"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -276,6 +276,11 @@ class KeyEventRelationship(Base):
 
 
 class Aop(Base):
+    """Table describing AOPs.
+
+    An adverse outcome pathway is a chain of Key Events starting with a molecular initiating events and ending with
+    an adverse outcome.
+    """
     __tablename__ = "aop"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -318,6 +323,7 @@ class Aop(Base):
 # Custom association tables
 # Key Event Links
 class SexKeyEvent(Base):
+    """Association table connecting Sex and KeyEvent models."""
     __tablename__ = "aop_sex_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -330,6 +336,7 @@ class SexKeyEvent(Base):
 
 
 class LifeStageKeyEvent(Base):
+    """Association table connecting LifeStage and KeyEvent models."""
     __tablename__ = "aop_life_stage_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -342,6 +349,7 @@ class LifeStageKeyEvent(Base):
 
 
 class TaxonomyKeyEvent(Base):
+    """Association table connecting Taxonomy and KeyEvent models."""
     __tablename__ = "aop_taxonomy_key_event_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -355,6 +363,7 @@ class TaxonomyKeyEvent(Base):
 
 # Key Event Relationship Links
 class SexKeyEventRelationship(Base):
+    """Association table connecting Sex and KeyEventRelationship models."""
     __tablename__ = "aop_sex_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -367,6 +376,7 @@ class SexKeyEventRelationship(Base):
 
 
 class LifeStageKeyEventRelationship(Base):
+    """Association table connecting LifeStage and KeyEventRelationship models."""
     __tablename__ = "aop_life_stage_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -379,6 +389,7 @@ class LifeStageKeyEventRelationship(Base):
 
 
 class TaxonomyKeyEventRelationship(Base):
+    """Association table connecting Taxonomy and KeyEventRelationship models."""
     __tablename__ = "aop_taxonomy_ker_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -392,6 +403,7 @@ class TaxonomyKeyEventRelationship(Base):
 
 # AOP Links
 class SexAop(Base):
+    """Association table connecting Sex and Aop models."""
     __tablename__ = "aop_sex_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -404,6 +416,7 @@ class SexAop(Base):
 
 
 class LifeStageAop(Base):
+    """Association table connecting LifeStage and Aop models."""
     __tablename__ = "aop_life_stage_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -416,6 +429,7 @@ class LifeStageAop(Base):
 
 
 class TaxonomyAop(Base):
+    """Association table connecting Taxonomy and Aop models."""
     # TODO No found instances of this association. Check if can be removed
     __tablename__ = "aop_taxonomy_aop_association"
 
@@ -429,6 +443,7 @@ class TaxonomyAop(Base):
 
 
 class AopKer(Base):
+    """Association table connecting KeyEventRelationship and Aop models."""
     __tablename__ = "aop_kers_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -443,6 +458,7 @@ class AopKer(Base):
 
 
 class AopKeyEvent(Base):
+    """Association table connecting KeyEvent and Aop models."""
     __tablename__ = "aop_key_event_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -456,6 +472,7 @@ class AopKeyEvent(Base):
 
 
 class AopStressor(Base):
+    """Association table connecting Stressor and Aop models."""
     __tablename__ = "aop_stressor_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -466,49 +483,3 @@ class AopStressor(Base):
 
     aop = relationship(Aop, back_populates="stressors")
     stressor = relationship(Stressor, back_populates="aops")
-
-
-# GEO data
-class Platform(Base):
-    __tablename__ = 'platforms'
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String(1000))
-    geo_accession = Column(String(250), index=True)
-    status = Column(String(500))
-    submission_date = Column(String(250))
-    last_update_date = Column(String(250))
-    technology = Column(String(1000))
-    distribution = Column(String(250))
-    data_row_count = Column(Integer)
-    samples = relationship("Sample", back_populates=PLATFORM)
-    # records = relationship("Series", secondary=platform_series, back_populates="platforms")
-
-
-class Series(Base):
-    __tablename__ = SERIES
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String(1000))
-    geo_accession = Column(String(250), index=True)
-    status = Column(String(500))
-    submission_date = Column(String(250))
-    last_update_date = Column(String(250))
-    type = Column(String(1000))
-    summary = Column(Text)
-    # platforms = relationship("Platform", secondary=platform_series, back_populates="records")
-    # samples = relationship("Sample", secondary=sample_series, back_populates="records")
-
-
-class Sample(Base):
-    __tablename__ = 'samples'
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String(1000))
-    geo_accession = Column(String(250), index=True)
-    status = Column(String(500))
-    submission_date = Column(String(250))
-    type = Column(String(250), index=True)
-    platform_id = Column(Integer, ForeignKey(Platform.id), index=True)
-    platform = relationship("Platform", back_populates="samples")
-    # records = relationship("Series", secondary=sample_series, back_populates="samples")

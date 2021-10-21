@@ -16,6 +16,7 @@ requirements = [
     'pymysql==1.0.2',
     'requests==2.26.0',
     'xmltodict',
+    'cryptography',
 ]
 
 setup_requirements = ['pytest-runner', ]
