@@ -29,12 +29,12 @@ def load():
 def conn(conn_str: str):
     """Sets the SQL connection string in the configuration file.
 
-    Parameters
-    ----------
-    conn_str : str
+    conn_str
         A python compatible SQL connection string. Drivers (e.g. pymysql) will need to be downloaded manually.
     """
     engine = create_engine(conn_str, convert_unicode=True)
+
+    # Check if connection string works
     engine.connect()
 
     set_conn(conn_string=conn_str)

@@ -428,18 +428,17 @@ class LifeStageAop(Base):
     aop = relationship(Aop, back_populates="life_stages")
 
 
-# No entries were found in the following table. Code will be left in case future AOP entries have Tax links.
-# class TaxonomyAop(Base):
-#     """Association table connecting Taxonomy and Aop models."""
-#     __tablename__ = "aop_taxonomy_aop_association"
-#
-#     id = Column(Integer, primary_key=True, autoincrement=True)
-#     tax_id = Column(Integer, ForeignKey(Taxonomy.id), index=True)
-#     aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
-#     evidence = Column(TEXT)
-#
-#     taxonomy = relationship(Taxonomy, back_populates="aops")
-#     aop = relationship(Aop, back_populates="taxonomies")
+class TaxonomyAop(Base):
+    """Association table connecting Taxonomy and Aop models."""
+    __tablename__ = "aop_taxonomy_aop_association"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tax_id = Column(Integer, ForeignKey(Taxonomy.id), index=True)
+    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    evidence = Column(TEXT)
+
+    taxonomy = relationship(Taxonomy, back_populates="aops")
+    aop = relationship(Aop, back_populates="taxonomies")
 
 
 class AopKer(Base):

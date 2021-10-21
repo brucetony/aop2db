@@ -39,6 +39,7 @@ class TestImporter:
             "aop_stressor",
             "aop_stressor_aop_association",
             "aop_taxonomy",
+            "aop_taxonomy_aop_association",
             "aop_taxonomy_ker_association",
             "aop_taxonomy_key_event_association",
             "key_event_bio_event_association",
@@ -61,6 +62,7 @@ class TestImporter:
 
         # Check none of the tables are empty
         for table_name in required_tables:
-            entry = conn.execute(f"SELECT * FROM {table_name} LIMIT 1;").fetchone()
-            assert entry
+            if table_name != "aop_taxonomy_aop_association":  # No entries at the moment
+                entry = conn.execute(f"SELECT * FROM {table_name} LIMIT 1;").fetchone()
+                assert entry
 
