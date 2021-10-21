@@ -1,16 +1,14 @@
-Welcome to aop2db's documentation!
-======================================
+AOP2DB Documentation
+====================
+.. include:: ../../README.rst
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   readme
    installation
-   usage
+   methods
 
 Indices and tables
 ==================
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
