@@ -35,8 +35,8 @@ guarantee of maintenance, support, or back-up of data.
 .. |python_versions| image:: https://img.shields.io/pypi/pyversions/aop2db.svg
     :alt: Stable Supported Python Versions
 
-.. |travis| image:: https://img.shields.io/travis/brucetony/aop2db.svg
-        :target: https://travis-ci.com/brucetony/aop2db
+.. |travis| image:: https://app.travis-ci.com/brucetony/aop2db.svg?branch=master
+    :alt: Current build status
 
 .. |docs| image:: https://readthedocs.org/projects/aop2db/badge/?version=latest
         :target: https://readthedocs.org/projects/aop2db/badge/?version=latest
