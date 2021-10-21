@@ -1,6 +1,6 @@
-==========================================
-AOP2DB |docs| |python_versions| |travis|
-==========================================
+====================================================
+AOP2DB |docs| |python_versions| |travis| |coverage|
+====================================================
 
 Package for compiling the adverse outcome pathway (AOP) data into a relational database. The data is publicly available at the `AOP website <https://aopwiki.org/>`_.
 
@@ -44,3 +44,7 @@ guarantee of maintenance, support, or back-up of data.
 
 .. |pypi_license| image:: https://img.shields.io/pypi/l/aop2db.svg
     :alt: MIT
+
+.. |coverage| image:: https://app.codecov.io/gh/brucetony/aop2db/coverage.svg?branch=master
+    :target: https://app.codecov.io/gh/brucetony/aop2db/?branch=master
+    :alt: Coverage Status
