@@ -7,7 +7,7 @@ from aop2db.orm.manager import CONN
 from aop2db.orm.models import Chemical, Stressor, Synonym, CellTerm, OrganTerm, Taxonomy, BiologicalObject, \
     BiologicalAction, BiologicalProcess, BiologicalEvent, KeyEvent, TaxonomyKeyEvent, Aop, AopKeyEvent, \
     LifeStageKeyEvent, LifeStage, KeyEventRelationship, TaxonomyKeyEventRelationship, LifeStageKeyEventRelationship, \
-    LifeStageAop, AopStressor
+    LifeStageAop, AopStressor, Sex
 
 
 def get_aops(verbose: bool = False) -> pd.DataFrame:
@@ -301,6 +301,21 @@ def get_life_stages(verbose: bool = False) -> pd.DataFrame:
     pandas DataFrame
     """
     return __basic_query(LifeStage, verbose=verbose)
+
+
+def get_sexes(verbose: bool = False) -> pd.DataFrame:
+    """Get table of life stages.
+
+    Parameters
+    ----------
+    verbose : bool
+        If True, prints the SQL statement used to query the database.
+
+    Returns
+    -------
+    pandas DataFrame
+    """
+    return __basic_query(Sex, verbose=verbose)
 
 
 def get_bio_objects(verbose: bool = False) -> pd.DataFrame:
