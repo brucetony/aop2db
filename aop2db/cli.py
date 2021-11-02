@@ -8,8 +8,6 @@ from sqlalchemy_utils import database_exists, create_database
 from aop2db.aop.importer import import_aop_data
 from aop2db.utils import set_conn
 
-from sqlalchemy import create_engine
-
 logger = logging.getLogger(__name__)
 
 
