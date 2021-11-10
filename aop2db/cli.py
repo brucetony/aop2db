@@ -27,14 +27,16 @@ def load():
 
 @main.command()
 @click.argument('conn_str')
-def conn(conn_str: str):
+@click.option("-c", "--create", is_flag=True, default=False, help="Create the database if it doesn't exist.")
+def conn(conn_str: str, create: bool = True):
     """Set the SQL connection string in the configuration file.
 
     conn_str
         A python compatible SQL connection string. Drivers (e.g. pymysql) will need to be downloaded manually.
     """
-    if not database_exists(conn_str):
-        create_database(conn_str)
+    if create:
+        if not database_exists(conn_str):
+            create_database(conn_str)
 
     set_conn(conn_string=conn_str)
 
