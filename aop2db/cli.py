@@ -3,10 +3,11 @@ import logging
 import sys
 
 import click
-from sqlalchemy_utils import database_exists, create_database
 
 from aop2db.aop.importer import import_aop_data
 from aop2db.utils import set_conn
+
+from sqlalchemy_utils import create_database, database_exists
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,6 @@ def conn(conn_str: str):
     conn_str
         A python compatible SQL connection string. Drivers (e.g. pymysql) will need to be downloaded manually.
     """
-
     if not database_exists(conn_str):
         create_database(conn_str)
 

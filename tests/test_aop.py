@@ -91,7 +91,7 @@ class TestQuery:
             'creation', 'last_modified', 'authors', 'wiki_status', 'oecd_status',
             'saaop_status', 'oecd_project', 'essentiality_support',
             'potential_applications', 'key_event_id', 'key_event_type',
-            'stressor_id', 'stressor_evidence', 'life_stage'
+            'stressor', 'stressor_evidence', 'life_stage'
         ]
         self.check_query_results(get_aops(), expected_cols)
 
