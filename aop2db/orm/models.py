@@ -218,12 +218,11 @@ class KeyEvent(Base):
     biological_organization_level = Column(String(45))
     description = Column(TEXT)
     measurement_methodology = Column(TEXT)
+    references = Column(TEXT)
     evidence_supporting_taxonomic_applicability = Column(TEXT)
 
     # TODO: Add evidence and description metatable for stressor/KE
     stressors = relationship("Stressor", secondary=stressor_ke, backref="key_events")  # many-to-many
-
-    # Not including "references", too much text
 
     # New tables for cell_term and organ_term - many-to-one
     organ_term_id = Column(Integer, ForeignKey(OrganTerm.id))
@@ -264,6 +263,7 @@ class KeyEventRelationship(Base):
     source = Column(String(45))
     creation = Column(DateTime)
     last_modified = Column(DateTime)
+    references = Column(TEXT)
 
     # Link to KeyEvents = many-to-one
     up_event_id = Column(Integer, ForeignKey(KeyEvent.id))
@@ -285,8 +285,6 @@ class KeyEventRelationship(Base):
 
     aops = relationship("AopKer", back_populates="ker")
 
-    # Skip references
-
 
 class Aop(Base):
     """Table describing AOPs.
@@ -307,6 +305,7 @@ class Aop(Base):
     creation = Column(DateTime)
     last_modified = Column(DateTime)
     authors = Column(TEXT)
+    references = Column(TEXT)
 
     wiki_status = Column(String(100))
     oecd_status = Column(String(100))
@@ -331,7 +330,7 @@ class Aop(Base):
     kers = relationship("AopKer", back_populates="aop")
     stressors = relationship("AopStressor", back_populates="aop")
 
-    # Skipped references and overall_assessment
+    # Skipped overall_assessment
 
 
 # Custom association tables

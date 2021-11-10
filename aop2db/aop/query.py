@@ -28,7 +28,7 @@ def get_aops(verbose: bool = False) -> pd.DataFrame:
         Aop,
         KeyEvent.id.label("key_event_id"),
         AopKeyEvent.key_event_type,
-        Stressor.id.label("stressor_id"),
+        Stressor.name.label("stressor"),
         AopStressor.evidence.label("stressor_evidence"),
         LifeStage.life_stage,
     ).join(
@@ -155,7 +155,7 @@ def get_key_events(bio_events: bool = False,
             KeyEvent.biological_organization_level,
             CellTerm.name.label("cell_term"),
             OrganTerm.name.label("organ_term"),
-            Stressor.id.label("stressor_id"),
+            Stressor.name.label("stressor_id"),
             Taxonomy.tax_id,
             LifeStage.life_stage,
         ).join(

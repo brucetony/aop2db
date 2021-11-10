@@ -13,6 +13,7 @@ LAST_MODIFIED = "last_modified"
 LM_TIMESTAMP = "last-modification-timestamp"
 CREATION = "creation"
 CREATION_TIMESTAMP = "creation-timestamp"
+REFERENCES = "references"
 
 # API
 TAX_ID_LOOKUP = "https://rest.ensembl.org/taxonomy/id/{}?content-type=application/json"

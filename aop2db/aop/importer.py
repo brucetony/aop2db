@@ -13,7 +13,7 @@ import xmltodict
 
 
 from aop2db.constants import AOP_ID, AOP_XML_DOWNLOAD, APPLICABILITY, CREATION, CREATION_TIMESTAMP, EVIDENCE, ID, \
-    LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, SEX, TAXONOMY, TAX_ID_LOOKUP
+    LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, REFERENCES, SEX, TAXONOMY, TAX_ID_LOOKUP
 from aop2db.defaults import AOP_XML_FILE, TAXONOMY_CACHE
 from aop2db.orm.manager import engine, rebuild_database, session
 from aop2db.orm.models import Aop, AopKer, AopKeyEvent, AopStressor, BiologicalAction, BiologicalEvent, \
@@ -106,13 +106,13 @@ class AopImporter:
         aop_entries = []
         for aop in tqdm(aop_data, total=len(aop_data), desc="Importing AOPs"):
             # Discard unused columns
-            aop.pop("references", None)  # Don't need them
             aop.pop("overall-assessment", None)  # TODO decide later if we want to include them
 
             # Extract useful information
             aop[AOP_ID] = aop.pop(ID)
             aop[LAST_MODIFIED] = datetime.fromisoformat(aop.pop(LM_TIMESTAMP, None))
             aop[CREATION] = datetime.fromisoformat(aop.pop(CREATION_TIMESTAMP, None))
+            aop[REFERENCES] = aop.pop(REFERENCES)
             statuses = aop.pop("status")
             stressors = aop.pop("aop-stressors", None)
             kers = aop.pop("key-event-relationships")
@@ -232,7 +232,7 @@ class AopImporter:
 
         for ker in tqdm(kers, total=len(kers), desc="Importing key events relationships"):
             ker[AOP_ID] = ker.pop(ID)
-            ker.pop("references")  # Don't want it
+            ker[REFERENCES] = ker.pop(REFERENCES)
             ker = self.__extract_weight_of_evidence_values(ker)
             ker[LAST_MODIFIED] = datetime.fromisoformat(ker.pop(LM_TIMESTAMP, None))
             ker[CREATION] = datetime.fromisoformat(ker.pop(CREATION_TIMESTAMP, None))
@@ -317,7 +317,7 @@ class AopImporter:
 
         for ke in tqdm(key_events, total=len(key_events), desc="Importing key events"):
             ke[AOP_ID] = ke.pop(ID)
-            ke.pop("references")  # Don't want it
+            ke[REFERENCES] = ke.pop(REFERENCES)
 
             # Pop out terms with table relationships
             cell_term_data = ke.pop("cell-term", None)
