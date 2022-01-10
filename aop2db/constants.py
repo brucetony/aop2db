@@ -1,5 +1,7 @@
 """String definitions."""
 
+from . import LATEST_XML_VERSION
+
 DATABASE = "DATABASE"
 
 ID = "@id"
@@ -19,4 +21,4 @@ REFERENCES = "references"
 TAX_ID_LOOKUP = "https://rest.ensembl.org/taxonomy/id/{}?content-type=application/json"
 
 # AOP Download
-AOP_XML_DOWNLOAD = "https://aopwiki.org/downloads/aop-wiki-xml-2021-07-01.gz"
+AOP_XML_DOWNLOAD = f"https://aopwiki.org/downloads/aop-wiki-xml-{LATEST_XML_VERSION}.gz"
