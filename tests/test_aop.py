@@ -171,7 +171,7 @@ class TestQuery:
 
     def test_get_bio_objects(self):
         """Test the get_bio_objects method."""
-        expected_cols = ['aop_id', 'source', 'source_id', 'name' ]
+        expected_cols = ['aop_id', 'source', 'source_id', 'name']
         self.check_query_results(get_bio_objects(), expected_cols)
 
     def test_get_bio_actions(self):

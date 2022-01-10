@@ -1,17 +1,16 @@
 """AOP Wiki module."""
 
-import os
-import re
 import gzip
 import json
 import logging
-
-import requests
-import xmltodict
+import os
+import re
 
 from datetime import datetime
 from typing import Dict, Optional, Union
 
+import requests
+import xmltodict
 
 from aop2db.constants import AOP_ID, AOP_XML_DOWNLOAD, APPLICABILITY, CREATION, CREATION_TIMESTAMP, EVIDENCE, ID, \
     LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, REFERENCES, SEX, TAXONOMY, TAX_ID_LOOKUP
