@@ -17,7 +17,7 @@ CONN = get_conn()
 if not database_exists(CONN):
     create_database(CONN)
 
-engine = create_engine(CONN, convert_unicode=True)
+engine = create_engine(CONN)
 session = sessionmaker(bind=engine)
 
 
