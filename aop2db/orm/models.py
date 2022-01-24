@@ -35,7 +35,7 @@ class Chemical(Base):
     __tablename__ = "aop_chemical"
 
     id = Column(Integer, primary_key=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     casrn = Column(String(45), index=True)
     jchem_inchi_key = Column(String(255))
     indigo_inchi_key = Column(String(255))
@@ -52,7 +52,8 @@ class Stressor(Base):
     __tablename__ = "aop_stressor"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_id = Column(Integer, index=True)
+    aop_hash = Column(String(45), index=True)
     name = Column(String(255), index=True)
     description = Column(TEXT)
     exposure_characterization = Column(TEXT)
@@ -132,7 +133,7 @@ class Taxonomy(Base):
     __tablename__ = "aop_taxonomy"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     source = Column(String(45))
     source_id = Column(String(45))
     tax_id = Column(Integer, index=True)
@@ -151,7 +152,7 @@ class BiologicalObject(Base):
     __tablename__ = "aop_bio_object"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     source = Column(String(45))
     source_id = Column(String(45), index=True)
     name = Column(String(255))
@@ -165,7 +166,7 @@ class BiologicalProcess(Base):
     __tablename__ = "aop_bio_process"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     source = Column(String(45))
     source_id = Column(String(45), index=True)
     name = Column(String(255))
@@ -179,7 +180,7 @@ class BiologicalAction(Base):
     __tablename__ = "aop_bio_action"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     source = Column(String(45))
     source_id = Column(String(45), index=True)
     name = Column(String(255))
@@ -211,7 +212,8 @@ class KeyEvent(Base):
     __tablename__ = "aop_key_event"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_id = Column(Integer, index=True)
+    aop_hash = Column(String(45), index=True)
     title = Column(String(255))
     source = Column(String(45))
     short_name = Column(String(255))
@@ -256,7 +258,7 @@ class KeyEventRelationship(Base):
     __tablename__ = "aop_key_event_relationship"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_hash = Column(String(45), index=True)
     description = Column(TEXT)
     quantitative_understanding = Column(TEXT)
     evidence_supporting_taxonomic_applicability = Column(TEXT)
@@ -296,7 +298,8 @@ class Aop(Base):
     __tablename__ = "aop"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(String(45), index=True)
+    aop_id = Column(Integer, index=True)
+    aop_hash = Column(String(45), index=True)
     title = Column(String(255))
     background = Column(TEXT)
     short_name = Column(String(255))
@@ -428,7 +431,7 @@ class SexAop(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     sex_id = Column(Integer, ForeignKey(Sex.id), index=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     evidence = Column(TEXT)
 
     sex = relationship(Sex, back_populates="aops")
@@ -442,7 +445,7 @@ class LifeStageAop(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     life_stage_id = Column(Integer, ForeignKey(LifeStage.id), index=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     evidence = Column(TEXT)
 
     life_stage = relationship(LifeStage, back_populates="aops")
@@ -456,7 +459,7 @@ class TaxonomyAop(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tax_id = Column(Integer, ForeignKey(Taxonomy.id), index=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     evidence = Column(TEXT)
 
     taxonomy = relationship(Taxonomy, back_populates="aops")
@@ -469,7 +472,7 @@ class AopKer(Base):
     __tablename__ = "aop_kers_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     ker_id = Column(Integer, ForeignKey(KeyEventRelationship.id), index=True)
     adjacency = Column(String(45))
     quantitative_understanding_value = Column(String(45))
@@ -485,7 +488,7 @@ class AopKeyEvent(Base):
     __tablename__ = "aop_key_event_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     key_event_id = Column(Integer, ForeignKey(KeyEvent.id), index=True)
     evidence = Column(TEXT)
     key_event_type = Column(String(45))
@@ -500,7 +503,7 @@ class AopStressor(Base):
     __tablename__ = "aop_stressor_aop_association"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    aop_id = Column(Integer, ForeignKey(Aop.id), index=True)
+    aop_hash = Column(Integer, ForeignKey(Aop.id), index=True)
     stressor_id = Column(Integer, ForeignKey(Stressor.id), index=True)
     description = Column(TEXT)
     evidence = Column(String(45))

@@ -11,24 +11,24 @@ logger = logging.getLogger(__name__)
 # Paths
 HOME = str(Path.home())
 PROJECT_NAME = "aop2db"
-BASE_DIR = os.path.join(HOME, f'.{PROJECT_NAME}')
+BASE_DIR = Path.home().joinpath(f'.{PROJECT_NAME}')
 
-AOP_DIR = os.path.join(BASE_DIR, 'aop')
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
-DB_PATH = os.path.join(BASE_DIR, f"{PROJECT_NAME}.db")
+AOP_DIR = BASE_DIR.joinpath('aop')
+LOG_DIR = BASE_DIR.joinpath('logs')
+DB_PATH = BASE_DIR.joinpath(f"{PROJECT_NAME}.db")
 
-AOP_XML_FILE = os.path.join(AOP_DIR, os.path.basename(AOP_XML_DOWNLOAD))
-TAXONOMY_CACHE = os.path.join(AOP_DIR, "taxonomy_ids.json")
+AOP_XML_FILE = AOP_DIR.joinpath(Path(AOP_XML_DOWNLOAD).name)
+TAXONOMY_CACHE = AOP_DIR.joinpath("taxonomy_ids.json")
 
 # Make the folders
 os.makedirs(LOG_DIR, exist_ok=True)
 os.makedirs(AOP_DIR, exist_ok=True)
 
 # Config file
-CONFIG = os.path.join(BASE_DIR, 'config.ini')
+CONFIG = BASE_DIR.joinpath('config.ini')
 
 # Logging Configuration
-LOG_FILE_PATH = os.path.join(LOG_DIR, "aop2db.log")
+LOG_FILE_PATH = LOG_DIR.joinpath("aop2db.log")
 logging.basicConfig(
     filename=LOG_FILE_PATH,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -36,5 +36,4 @@ logging.basicConfig(
 )
 
 # SQL Connection
-
 CONN_STRING = f"sqlite:///{DB_PATH}"

@@ -32,15 +32,15 @@ def get_aops(verbose: bool = False) -> pd.DataFrame:
         AopStressor.evidence.label("stressor_evidence"),
         LifeStage.life_stage,
     ).join(
-        AopStressor, Aop.id == AopStressor.aop_id, isouter=True,
+        AopStressor, Aop.id == AopStressor.aop_hash, isouter=True,
     ).join(
         Stressor, isouter=True,
     ).join(
-        AopKeyEvent, Aop.id == AopKeyEvent.aop_id, isouter=True,
+        AopKeyEvent, Aop.id == AopKeyEvent.aop_hash, isouter=True,
     ).join(
         KeyEvent, isouter=True,
     ).join(
-        LifeStageAop, Aop.id == LifeStageAop.aop_id, isouter=True,
+        LifeStageAop, Aop.id == LifeStageAop.aop_hash, isouter=True,
     ).join(
         LifeStage, isouter=True,
     )
@@ -150,6 +150,7 @@ def get_key_events(bio_events: bool = False,
         stmt = select(
             KeyEvent.id,
             KeyEvent.aop_id,
+            KeyEvent.aop_hash,
             KeyEvent.title,
             KeyEvent.short_name,
             KeyEvent.biological_organization_level,
@@ -178,6 +179,7 @@ def get_key_events(bio_events: bool = False,
         stmt = select(
             KeyEvent.id,
             KeyEvent.aop_id,
+            KeyEvent.aop_hash,
             KeyEvent.title,
             KeyEvent.short_name,
             KeyEvent.biological_organization_level,
@@ -227,7 +229,7 @@ def get_stressors(verbose: bool = False) -> pd.DataFrame:
     """
     stmt = select(
         Stressor.id,
-        Stressor.aop_id,
+        Stressor.aop_hash,
         Stressor.name,
         Chemical.name.label("chemical_name"),
         Chemical.casrn.label("chemical_casrn"),

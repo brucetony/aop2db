@@ -87,7 +87,7 @@ class TestQuery:
     def test_get_aops(self):
         """Test the get_aop method."""
         expected_cols = [
-            'aop_id', 'title', 'background', 'short_name', 'abstract', 'source',
+            'aop_id', 'aop_hash', 'title', 'background', 'short_name', 'abstract', 'source',
             'creation', 'last_modified', 'authors', 'wiki_status', 'oecd_status',
             'saaop_status', 'oecd_project', 'essentiality_support',
             'potential_applications', 'key_event_id', 'key_event_type',
@@ -98,21 +98,21 @@ class TestQuery:
     def test_get_chemicals(self):
         """Test the get_chemicals method."""
         expected_cols = [
-            'aop_id', 'casrn', 'jchem_inchi_key', 'indigo_inchi_key', 'name', 'dsstox_id'
+            'aop_hash', 'casrn', 'jchem_inchi_key', 'indigo_inchi_key', 'name', 'dsstox_id'
         ]
         self.check_query_results(get_chemicals(), expected_cols)
 
     def test_get_stressors(self):
         """Test the get_stressors method."""
         expected_cols = [
-            'aop_id', 'name', 'chemical_name', 'chemical_casrn'
+            'aop_hash', 'name', 'chemical_name', 'chemical_casrn'
         ]
         self.check_query_results(get_stressors(), expected_cols)
 
     def test_get_taxonomies(self):
         """Test the get_taxonomies method."""
         expected_cols = [
-            'aop_id', 'source', 'source_id', 'tax_id', 'species', 'name'
+            'aop_hash', 'source', 'source_id', 'tax_id', 'species', 'name'
         ]
         self.check_query_results(get_taxonomies(), expected_cols)
 
@@ -139,14 +139,14 @@ class TestQuery:
     def test_get_key_events(self):
         """Test the get_key_events method."""
         expected_cols = [
-            'aop_id', 'title', 'short_name', 'biological_organization_level', 'cell_term', 'organ_term', 'tax_id'
+            'aop_id', 'aop_hash', 'title', 'short_name', 'biological_organization_level', 'cell_term', 'organ_term', 'tax_id'
         ]
         self.check_query_results(get_key_events(), expected_cols)
 
     def test_get_key_event_relationships(self):
         """Test the get_key_event_relationships method."""
         expected_cols = [
-            'aop_id',
+            'aop_hash',
             'description',
             'quantitative_understanding',
             'evidence_supporting_taxonomic_applicability',
@@ -171,15 +171,15 @@ class TestQuery:
 
     def test_get_bio_objects(self):
         """Test the get_bio_objects method."""
-        expected_cols = ['aop_id', 'source', 'source_id', 'name']
+        expected_cols = ['aop_hash', 'source', 'source_id', 'name']
         self.check_query_results(get_bio_objects(), expected_cols)
 
     def test_get_bio_actions(self):
         """Test the get_bio_actions method."""
-        expected_cols = ['aop_id', 'source', 'source_id', 'name']
+        expected_cols = ['aop_hash', 'source', 'source_id', 'name']
         self.check_query_results(get_bio_actions(), expected_cols)
 
     def test_get_bio_processes(self):
         """Test the get_bio_processes method."""
-        expected_cols = ['aop_id', 'source', 'source_id', 'name']
+        expected_cols = ['aop_hash', 'source', 'source_id', 'name']
         self.check_query_results(get_bio_processes(), expected_cols)

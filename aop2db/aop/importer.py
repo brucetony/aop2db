@@ -3,18 +3,20 @@
 import gzip
 import json
 import logging
-import os
 import re
 
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Optional, Union
 
 import requests
 import xmltodict
 
-from aop2db.constants import AOP_ID, AOP_XML_DOWNLOAD, APPLICABILITY, CREATION, CREATION_TIMESTAMP, EVIDENCE, ID, \
-    LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, REFERENCES, SEX, TAXONOMY, TAX_ID_LOOKUP
-from aop2db.defaults import AOP_XML_FILE, TAXONOMY_CACHE
+from aop2db.constants import AOP_HASH, AOP_ID, AOP_JSON, AOP_JSONS, AOP_XML_DOWNLOAD, APPLICABILITY, CREATION, \
+    CREATION_TIMESTAMP, EVIDENCE, ID, KE_JSON, LAST_MODIFIED, LIFESTAGE, LM_TIMESTAMP, REFERENCES, SEX, \
+    STRESSOR_JSON, TAXONOMY, TAX_ID_LOOKUP
+
+from aop2db.defaults import AOP_DIR, AOP_XML_FILE, TAXONOMY_CACHE
 from aop2db.orm.manager import engine, rebuild_database, session
 from aop2db.orm.models import Aop, AopKer, AopKeyEvent, AopStressor, BiologicalAction, BiologicalEvent, \
     BiologicalObject, BiologicalProcess, CellTerm, Chemical, KeyEvent, KeyEventRelationship, LifeStage, LifeStageAop, \
@@ -61,7 +63,9 @@ class AopImporter:
     def __init__(self):
         """Init method."""
         # Get all AOP data as dict
+
         self.aop_data: dict = self.__xml_to_dict()['data']
+        self.json_data = self.create_json_data_mapper()
         self.session = session()  # SQL session
 
         self.organ_terms: dict = dict()  # Filled during import_key_events
@@ -74,6 +78,29 @@ class AopImporter:
 
         self.current_sex_cache = set()
         self.current_ls_cache = set()
+
+    def create_json_data_mapper(self) -> dict:
+        """Create dictionary with JSON data mapper."""
+        self.__download_aop_json()  # Download JSON files
+        json_data_mapper = dict()
+        for file_name in (AOP_JSON, KE_JSON, STRESSOR_JSON):
+            file_path = AOP_DIR.joinpath(Path(file_name).name)
+
+            with file_path.open() as jsonf:
+                content = json.load(jsonf)
+
+            if file_name == STRESSOR_JSON:
+                mapper = dict()
+                for entry in content:
+                    for chemical in entry["chemicals"]:
+                        mapper[chemical["casrn"].strip()] = entry["id"]
+
+            else:
+                mapper = {entry["title"].strip(): entry["id"] for entry in content}
+
+            json_data_mapper[file_name] = mapper
+
+        return json_data_mapper
 
     def import_aop_data(self):
         """Import downloaded AOP data into database."""
@@ -109,7 +136,8 @@ class AopImporter:
             aop.pop("overall-assessment", None)  # TODO decide later if we want to include them
 
             # Extract useful information
-            aop[AOP_ID] = aop.pop(ID)
+            aop[AOP_ID] = self.__get_aop_id(AOP_JSON, aop["title"])
+            aop[AOP_HASH] = aop.pop(ID)
             aop[LAST_MODIFIED] = datetime.fromisoformat(aop.pop(LM_TIMESTAMP, None))
             aop[CREATION] = datetime.fromisoformat(aop.pop(CREATION_TIMESTAMP, None))
             aop[REFERENCES] = aop.pop(REFERENCES)
@@ -160,8 +188,8 @@ class AopImporter:
         for ke_type, ke_data in ke_dict.items():
             if ke_data:
                 if ke_type == "key_events":
-                    ke_aop_ids = [ke[ID] for ke in self._listify(ke_data['key-event'])]
-                    ke_objs = [key_event_mapper[ke_aop_id] for ke_aop_id in ke_aop_ids]
+                    ke_aop_hashes = [ke[ID] for ke in self._listify(ke_data['key-event'])]
+                    ke_objs = [key_event_mapper[ke_aop_hash] for ke_aop_hash in ke_aop_hashes]
                     for ke_obj in ke_objs:
                         aop_ke_asso = AopKeyEvent(key_event_type="key_event")
                         aop_ke_asso.key_event = ke_obj
@@ -170,14 +198,14 @@ class AopImporter:
                 else:  # Either mies (molecular initiating events) or aos (adverse outcomes)
                     ke_data = self._listify(ke_data)
                     for special_event in ke_data:
-                        ke_aop_id = special_event["@key-event-id"]
+                        ke_aop_hash = special_event["@key-event-id"]
 
                         key_event_type = ke_tags[ke_type]["ke_type"]
                         evidence_tag = ke_tags[ke_type][EVIDENCE]
 
                         evidence = special_event[evidence_tag]
 
-                        ke_obj = key_event_mapper[ke_aop_id]
+                        ke_obj = key_event_mapper[ke_aop_hash]
                         aop_ke_asso = AopKeyEvent(key_event_type=key_event_type, evidence=evidence)
                         aop_ke_asso.key_event = ke_obj
                         aop_entry.key_events.append(aop_ke_asso)
@@ -188,9 +216,9 @@ class AopImporter:
         """Extract and add stressor_mapper to AOP entry."""
         stressors = self._listify(stressor_dict["aop-stressor"])
         for stressor in stressors:
-            stressor_aop_id = stressor["@stressor-id"]
+            stressor_aop_hash = stressor["@stressor-id"]
             stressor_asso = AopStressor(description=stressor["description"], evidence=stressor[EVIDENCE])
-            stressor_asso.stressor = stressor_mapper[stressor_aop_id]
+            stressor_asso.stressor = stressor_mapper[stressor_aop_hash]
             aop_entry.stressors.append(stressor_asso)
 
         return aop_entry
@@ -199,11 +227,11 @@ class AopImporter:
         """Extract and add key event relationships to AOP entry."""
         ker_list = self._listify(ker_dict["relationship"])
         for ker in ker_list:
-            ker_aop_id = ker[ID]
+            ker_aop_hash = ker[ID]
             ker_asso = AopKer(adjacency=ker["adjacency"],
                               quantitative_understanding_value=ker["quantitative-understanding-value"],
                               evidence=ker[EVIDENCE])
-            ker_asso.ker = ker_mapper[ker_aop_id]
+            ker_asso.ker = ker_mapper[ker_aop_hash]
             aop_entry.kers.append(ker_asso)
 
         return aop_entry
@@ -231,7 +259,7 @@ class AopImporter:
         ker_entires = []
 
         for ker in tqdm(kers, total=len(kers), desc="Importing key events relationships"):
-            ker[AOP_ID] = ker.pop(ID)
+            ker[AOP_HASH] = ker.pop(ID)
             ker[REFERENCES] = ker.pop(REFERENCES)
             ker = self.__extract_weight_of_evidence_values(ker)
             ker[LAST_MODIFIED] = datetime.fromisoformat(ker.pop(LM_TIMESTAMP, None))
@@ -316,7 +344,8 @@ class AopImporter:
         ke_entires = []
 
         for ke in tqdm(key_events, total=len(key_events), desc="Importing key events"):
-            ke[AOP_ID] = ke.pop(ID)
+            ke[AOP_ID] = self.__get_aop_id(KE_JSON, ke["title"])
+            ke[AOP_HASH] = ke.pop(ID)
             ke[REFERENCES] = ke.pop(REFERENCES)
 
             # Pop out terms with table relationships
@@ -336,7 +365,7 @@ class AopImporter:
                 self.__create_modify_organ_cell_object(organ_term_data, OrganTerm, key_event)
 
             if bio_events_dict:
-                self.__parse_bio_events(bio_events_dict, ke[AOP_ID])
+                self.__parse_bio_events(bio_events_dict, ke[AOP_HASH])
 
             if applicability:
                 key_event = self.__parse_applicability(applicability, key_event)
@@ -352,7 +381,7 @@ class AopImporter:
         """Get stressor obj and append to key event. Returns modified key event obj."""
         stressor_data = self._listify(stressors['key-event-stressor'])
         stressor_ids = [stressor["@stressor-id"] for stressor in stressor_data]
-        stressor_objs = [mapper[aop_id] for aop_id in stressor_ids]
+        stressor_objs = [mapper[aop_hash] for aop_hash in stressor_ids]
         key_event.stressors = stressor_objs
         return key_event
 
@@ -362,10 +391,10 @@ class AopImporter:
             evidence_lines = self._listify(applicability_data[TAXONOMY])
 
             for evidence in evidence_lines:
-                tax_aop_id = evidence["@taxonomy-id"]
+                tax_aop_hash = evidence["@taxonomy-id"]
                 tax_evidence = evidence[EVIDENCE]
                 tax_asso = asso_class(evidence=tax_evidence)  # Create new association object
-                tax_asso.taxonomy = self.taxonomies[tax_aop_id]  # Set Tax entry to mapped Taxonomy obj
+                tax_asso.taxonomy = self.taxonomies[tax_aop_hash]  # Set Tax entry to mapped Taxonomy obj
                 new_entry.taxonomies.append(tax_asso)  # Append association object to KeyEvent obj
 
         if SEX in applicability_data:
@@ -443,7 +472,7 @@ class AopImporter:
         self.session.add_all(bio_event_entries)
         self.session.commit()
 
-    def __parse_bio_events(self, bio_events: dict, key_event_aop_id: str):
+    def __parse_bio_events(self, bio_events: dict, key_event_aop_hash: str):
         """Parse bio event information in key events."""
         logger.info("Parsing biological events")
         bes = self._listify(bio_events['biological-event'])
@@ -451,10 +480,10 @@ class AopImporter:
             be_key = self.__create_unique_key(be)  # Sort bio AOP IDs into tuple and use as key
 
             if be_key in self.bio_events:
-                self.bio_events[be_key].append(key_event_aop_id)  # Add KeyEvent obj to list
+                self.bio_events[be_key].append(key_event_aop_hash)  # Add KeyEvent obj to list
 
             else:
-                self.bio_events[be_key] = [key_event_aop_id]  # Start new list
+                self.bio_events[be_key] = [key_event_aop_hash]  # Start new list
 
     def __create_modify_organ_cell_object(self, term_values: dict, table, key_event: KeyEvent):
         """Sanitize keys and values for an Organ or Cell Term and create/modify ORM obj.
@@ -511,7 +540,8 @@ class AopImporter:
         stressor_entries = []
         stressors = self.aop_data['stressor']
         for stressor in stressors:
-            stressor[AOP_ID] = stressor.pop(ID)
+            # stressor[AOP_ID] = self.__get_aop_id(STRESSOR_JSON, stressor["casrn"])  #TODO Parse chemicals for CASRN
+            stressor[AOP_HASH] = stressor.pop(ID)
             chemical_data = stressor.pop("chemicals", None)
             stressor[CREATION] = datetime.fromisoformat(stressor.pop(CREATION_TIMESTAMP))
             stressor[LAST_MODIFIED] = datetime.fromisoformat(stressor.pop(LM_TIMESTAMP))
@@ -535,6 +565,11 @@ class AopImporter:
 
         return stressor_entries
 
+    def __get_aop_id(self, json_url: str, map_key: str) -> Optional[int]:
+        """Get the AOP ID from the downloaded JSON content."""
+        if map_key in self.json_data[json_url]:
+            return self.json_data[json_url][map_key]
+
     def import_chemicals(self) -> dict:
         """Import parsed chemical data into database and return number of rows imported for chemicals and synonyms."""
         parsed_chemicals = self.__parse_chemicals()
@@ -542,12 +577,12 @@ class AopImporter:
         synonym_rows = []
         with engine.connect() as conn:
             # Add chem to DB one at a time to get chem IDs for synonyms
-            for aop_id, chem_data in tqdm(parsed_chemicals.items(),
-                                          total=len(parsed_chemicals),
-                                          desc="Importing chemicals and synonyms"):
+            for aop_hash, chem_data in tqdm(parsed_chemicals.items(),
+                                            total=len(parsed_chemicals),
+                                            desc="Importing chemicals and synonyms"):
                 logger.info("Importing chemicals")
                 # Format data
-                chem_data[AOP_ID] = aop_id
+                chem_data[AOP_HASH] = aop_hash
                 synonyms = chem_data.pop("synonyms")
                 standardize_data = self.__standardize_keys(chem_data)
                 standardize_data["name"] = standardize_data.pop("preferred_name")
@@ -614,10 +649,10 @@ class AopImporter:
             aop_entries = self.aop_data[metadata["aop_key"]]
 
             for entry in aop_entries:  # Iterate through class entries
-                aop_id = entry.pop(ID)
+                aop_hash = entry.pop(ID)
                 source_id = entry.pop("source-id")
                 entry["source_id"] = self.__split_source_id(source_id)
-                parsed_entries[aop_id] = entry
+                parsed_entries[aop_hash] = entry
 
             parsed_bio_data[bio_class] = parsed_entries
 
@@ -677,8 +712,8 @@ class AopImporter:
     def __import_simple_rows(entries: dict, table) -> int:
         """Import entries into specified table. Only works with simple tables. Returns number of rows inserted."""
         table_rows = []
-        for aop_id, entry_data in entries.items():
-            entry_data[AOP_ID] = aop_id
+        for aop_hash, entry_data in entries.items():
+            entry_data[AOP_HASH] = aop_hash
             table_rows.append(entry_data)
 
         with engine.connect() as conn:
@@ -690,7 +725,7 @@ class AopImporter:
     def __get_tax_id_cache() -> dict:
         """Import cached taxonomy IDs if JSON exists, else returns empty dict."""
         tax_cache = dict()
-        if os.path.isfile(TAXONOMY_CACHE):
+        if Path(TAXONOMY_CACHE).is_file():
             with open(TAXONOMY_CACHE, 'r') as tax_file:
                 tax_cache = json.load(tax_file)
 
@@ -717,7 +752,7 @@ class AopImporter:
 
     def __get_aop_mapper(self, table) -> dict:
         """Generate a mapper with AOP IDs as keys and ORM objs as values for a specified table."""
-        results = self.session.query(table.aop_id, table).all()
+        results = self.session.query(table.aop_hash, table).all()
         return {x[0]: x[1] for x in results}
 
     @staticmethod
@@ -734,16 +769,34 @@ class AopImporter:
     @staticmethod
     def __download_aop_xml():
         """Download the default AOP XML file to data directory."""
-        if not os.path.isfile(AOP_XML_FILE):
+        if not Path(AOP_XML_FILE).is_file():
             logger.info(f"Downloading {AOP_XML_DOWNLOAD}")
             resp = requests.get(AOP_XML_DOWNLOAD)
             if resp.ok:
                 with open(AOP_XML_FILE, 'wb') as aopf:
                     aopf.write(resp.content)
-                logger.info(f"{os.path.basename(AOP_XML_DOWNLOAD)} saved to {AOP_XML_FILE}")
+                logger.info(f"{Path(AOP_XML_DOWNLOAD).name} saved to {AOP_XML_FILE}")
 
             else:
                 logger.warning(f"Could not download {AOP_XML_DOWNLOAD}!")
+
+    @staticmethod
+    def __download_aop_json():
+        """Download the AOP JSON to get AOP IDs."""
+        downloaded_files = [file_path.name for file_path in AOP_DIR.iterdir()]
+        for download_path in AOP_JSONS:
+            json_file_name = Path(download_path).name
+            if json_file_name not in downloaded_files:
+                resp = requests.get(download_path)
+
+                if resp.ok:
+                    with open(AOP_DIR.joinpath(json_file_name), 'w') as jsonf:
+                        json.dump(resp.json(), jsonf)
+
+                    logger.info(f"{json_file_name} saved to {AOP_DIR.joinpath(json_file_name)}")
+
+                else:
+                    logger.warning(f"Could not download {json_file_name}!")
 
     @staticmethod
     def __create_unique_key(value_dict: dict) -> tuple:
@@ -770,8 +823,8 @@ class AopImporter:
     def __xml_to_dict(self) -> dict:
         """Read and convert AOP XML to a dictionary, then write to JSON if not there. Returns XML content as dict."""
         self.__download_aop_xml()
-        json_file_path = AOP_XML_FILE + ".json"
-        if not os.path.isfile(json_file_path):
+        json_file_path = str(AOP_XML_FILE) + ".json"
+        if not Path(json_file_path).is_file():
             with gzip.open(AOP_XML_FILE, 'rb') as aopf:
                 content = aopf.read()
 
@@ -786,3 +839,7 @@ class AopImporter:
             content_as_json = json.load(aopjson)
 
         return content_as_json
+
+
+if __name__ == "__main__":
+    import_aop_data()
