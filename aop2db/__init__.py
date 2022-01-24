@@ -12,6 +12,6 @@ def __get_latest_xml_file() -> str:
 
 __author__ = """Bruce Schultz"""
 __email__ = 'bruce.schultz@scai.fraunhofer.de'
-__version__ = '0.2.4'
+__version__ = '0.2.5'
 
 LATEST_XML_VERSION = __get_latest_xml_file()
