@@ -1,6 +1,6 @@
 # Config file for automatic testing at travis-ci.com
 os: linux
-dist: xenial
+dist: focal
 cache: pip
 
 language: python
