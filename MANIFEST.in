@@ -9,3 +9,11 @@ global-exclude *.py[cod] __pycache__ *.so .DS_Store *.png *.ipynb *.json
 exclude .bumpversion.cfg *.yml LICENSE tox.ini .flake8 .coveragerc
 
 include *.rst *.txt
+include *.in
+include *.rst
+include *.txt
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include tests *.py
