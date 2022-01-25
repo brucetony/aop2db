@@ -1,24 +1,11 @@
-include LICENSE
-include *.rst *.txt
-
 graft aop2db
 graft tests
 
-graft docs
-prune docs/build
-
-exclude .bumpversion.cfg
-exclude .coveragerc
-exclude .flask8
-exclude *.yml
-
-global-exclude  __pycache__
-global-exclude *.ipynb
-global-exclude *.json
-global-exclude *.png
-global-exclude *.py[cod]
-global-exclude *.so
-global-exclude *~
-
 recursive-include docs/source *.py *.rst
 recursive-include docs Makefile *.bat
+
+global-exclude *.py[cod] __pycache__ *.so .DS_Store *.png *.ipynb *.json
+
+exclude .bumpversion.cfg *.yml LICENSE tox.ini .flake8 .coveragerc
+
+include *.rst *.txt
