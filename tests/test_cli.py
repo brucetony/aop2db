@@ -1,9 +1,9 @@
 """Tests for the CLI."""
 
-from aop2db.utils import get_conn, set_conn
-from aop2db.cli import conn, load
-
 from click.testing import CliRunner
+
+from aop2db.cli import conn, load
+from aop2db.utils import get_conn, set_conn
 
 
 class TestCli:

@@ -3,16 +3,17 @@ import logging
 import sys
 
 import click
+from sqlalchemy_utils import create_database, database_exists
 
 from aop2db.aop.importer import import_aop_data
 from aop2db.utils import set_conn
 
-from sqlalchemy_utils import create_database, database_exists
-
 logger = logging.getLogger(__name__)
 
 
-@click.group(help=f"AOP2DB Database Framework Command Line Utilities on {sys.executable}")
+@click.group(
+    help=f"AOP2DB Database Framework Command Line Utilities on {sys.executable}"
+)
 @click.version_option()
 def main():
     """Console script for aop2db."""
@@ -26,8 +27,14 @@ def load():
 
 
 @main.command()
-@click.argument('conn_str')
-@click.option("-c", "--create", is_flag=True, default=False, help="Create the database if it doesn't exist.")
+@click.argument("conn_str")
+@click.option(
+    "-c",
+    "--create",
+    is_flag=True,
+    default=False,
+    help="Create the database if it doesn't exist.",
+)
 def conn(conn_str: str, create: bool = True):
     """Set the SQL connection string in the configuration file.
 

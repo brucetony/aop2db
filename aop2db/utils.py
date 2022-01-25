@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def __check_config_file() -> bool:
     if not os.path.isfile(CONFIG):  # then make empty file
-        with open(CONFIG, 'w'):
+        with open(CONFIG, "w"):
             pass
         return False
 
@@ -27,7 +27,7 @@ def get_conn() -> str:
     if not config.has_section(DATABASE):
         config.add_section(DATABASE)
         config.set(DATABASE, "CONN", CONN_STRING)
-        with open(CONFIG, 'w') as cf:
+        with open(CONFIG, "w") as cf:
             config.write(cf)
 
         return CONN_STRING
@@ -42,5 +42,5 @@ def set_conn(conn_string: str) -> None:
     config = ConfigParser()
     config.read(CONFIG)
     config.set(DATABASE, "CONN", conn_string)
-    with open(CONFIG, 'w') as cf:
+    with open(CONFIG, "w") as cf:
         config.write(cf)

@@ -2,13 +2,12 @@
 
 import logging
 
-from aop2db.orm.models import Base
-from aop2db.utils import get_conn
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
+from aop2db.orm.models import Base
+from aop2db.utils import get_conn
 
 logger = logging.getLogger(__name__)
 

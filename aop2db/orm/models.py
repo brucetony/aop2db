@@ -1,6 +1,6 @@
 """Model definitions."""
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, TEXT, Table
+from sqlalchemy import TEXT, Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -8,24 +8,24 @@ Base = declarative_base()
 
 # AOP
 stressor_chemical = Table(
-    'stressor_chemical_association',
+    "stressor_chemical_association",
     Base.metadata,
-    Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True),
-    Column('chemical_id', ForeignKey('aop_chemical.id'), primary_key=True),
+    Column("stressor_id", ForeignKey("aop_stressor.id"), primary_key=True),
+    Column("chemical_id", ForeignKey("aop_chemical.id"), primary_key=True),
 )
 
 ke_be = Table(
-    'key_event_bio_event_association',
+    "key_event_bio_event_association",
     Base.metadata,
-    Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
-    Column('bio_event_id', ForeignKey('aop_bio_event.id'), primary_key=True),
+    Column("key_event_id", ForeignKey("aop_key_event.id"), primary_key=True),
+    Column("bio_event_id", ForeignKey("aop_bio_event.id"), primary_key=True),
 )
 
 stressor_ke = Table(
-    'stressor_key_event_association',
+    "stressor_key_event_association",
     Base.metadata,
-    Column('key_event_id', ForeignKey('aop_key_event.id'), primary_key=True),
-    Column('stressor_id', ForeignKey('aop_stressor.id'), primary_key=True),
+    Column("key_event_id", ForeignKey("aop_key_event.id"), primary_key=True),
+    Column("stressor_id", ForeignKey("aop_stressor.id"), primary_key=True),
 )
 
 
@@ -43,7 +43,9 @@ class Chemical(Base):
     dsstox_id = Column(String(45))
 
     synonyms = relationship("Synonym", back_populates="chemical")
-    stressors = relationship("Stressor", secondary=stressor_chemical, back_populates="chemicals")
+    stressors = relationship(
+        "Stressor", secondary=stressor_chemical, back_populates="chemicals"
+    )
 
 
 class Stressor(Base):
@@ -60,7 +62,9 @@ class Stressor(Base):
     creation = Column(DateTime)
     last_modified = Column(DateTime)
 
-    chemicals = relationship("Chemical", secondary=stressor_chemical, back_populates="stressors")
+    chemicals = relationship(
+        "Chemical", secondary=stressor_chemical, back_populates="stressors"
+    )
     aops = relationship("AopStressor", back_populates="stressor")
 
 
@@ -199,9 +203,15 @@ class BiologicalEvent(Base):
     bio_process_id = Column(Integer, ForeignKey(BiologicalProcess.id))
     bio_object_id = Column(Integer, ForeignKey(BiologicalObject.id))
 
-    bio_action = relationship("BiologicalAction", backref="events", foreign_keys=[bio_action_id])
-    bio_process = relationship("BiologicalProcess", backref="events", foreign_keys=[bio_process_id])
-    bio_object = relationship("BiologicalObject", backref="events", foreign_keys=[bio_object_id])
+    bio_action = relationship(
+        "BiologicalAction", backref="events", foreign_keys=[bio_action_id]
+    )
+    bio_process = relationship(
+        "BiologicalProcess", backref="events", foreign_keys=[bio_process_id]
+    )
+    bio_object = relationship(
+        "BiologicalObject", backref="events", foreign_keys=[bio_object_id]
+    )
 
     key_events = relationship("KeyEvent", secondary=ke_be, backref="bio_events")
 
@@ -224,14 +234,20 @@ class KeyEvent(Base):
     evidence_supporting_taxonomic_applicability = Column(TEXT)
 
     # TODO: Add evidence and description metatable for stressor/KE
-    stressors = relationship("Stressor", secondary=stressor_ke, backref="key_events")  # many-to-many
+    stressors = relationship(
+        "Stressor", secondary=stressor_ke, backref="key_events"
+    )  # many-to-many
 
     # New tables for cell_term and organ_term - many-to-one
     organ_term_id = Column(Integer, ForeignKey(OrganTerm.id))
-    organ_term = relationship("OrganTerm", backref="key_events", foreign_keys=[organ_term_id])
+    organ_term = relationship(
+        "OrganTerm", backref="key_events", foreign_keys=[organ_term_id]
+    )
 
     cell_term_id = Column(Integer, ForeignKey(CellTerm.id))
-    cell_term = relationship("CellTerm", backref="key_events", foreign_keys=[cell_term_id])
+    cell_term = relationship(
+        "CellTerm", backref="key_events", foreign_keys=[cell_term_id]
+    )
 
     # Many to many rels
     sexes = relationship("SexKeyEvent", back_populates="key_event")
@@ -272,7 +288,9 @@ class KeyEventRelationship(Base):
     down_event_id = Column(Integer, ForeignKey(KeyEvent.id))
 
     up_event = relationship("KeyEvent", backref="up_events", foreign_keys=[up_event_id])
-    down_event = relationship("KeyEvent", backref="down_events", foreign_keys=[down_event_id])
+    down_event = relationship(
+        "KeyEvent", backref="down_events", foreign_keys=[down_event_id]
+    )
 
     # Evidence columns
     evidence_value = Column(TEXT)

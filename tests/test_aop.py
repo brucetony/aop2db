@@ -2,11 +2,14 @@
 import pandas as pd
 from sqlalchemy_utils import database_exists
 
-from aop2db.orm.manager import engine, CONN
 from aop2db.aop.importer import import_aop_data
-from aop2db.aop.query import get_aops, get_chemicals, get_taxonomies, get_stressors, get_life_stages, \
-    get_cell_terms, get_organ_terms, get_key_events, get_bio_events, get_bio_actions, get_bio_objects, \
-    get_bio_processes, get_key_event_relationships, get_sexes
+from aop2db.aop.query import (get_aops, get_bio_actions, get_bio_events,
+                              get_bio_objects, get_bio_processes,
+                              get_cell_terms, get_chemicals,
+                              get_key_event_relationships, get_key_events,
+                              get_life_stages, get_organ_terms, get_sexes,
+                              get_stressors, get_taxonomies)
+from aop2db.orm.manager import CONN, engine
 
 
 class TestImporter:

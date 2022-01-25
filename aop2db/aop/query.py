@@ -1,13 +1,32 @@
 """Query the AOP tables."""
 import pandas as pd
+from sqlalchemy import select
 
 from aop2db.orm.manager import CONN
-from aop2db.orm.models import Aop, AopKeyEvent, AopStressor, BiologicalAction, BiologicalEvent, BiologicalObject, \
-    BiologicalProcess, CellTerm, Chemical, KeyEvent, KeyEventRelationship, LifeStage, LifeStageAop, \
-    LifeStageKeyEvent, LifeStageKeyEventRelationship, OrganTerm, Sex, Stressor, Synonym, Taxonomy, \
-    TaxonomyKeyEvent, TaxonomyKeyEventRelationship
-
-from sqlalchemy import select
+from aop2db.orm.models import (
+    Aop,
+    AopKeyEvent,
+    AopStressor,
+    BiologicalAction,
+    BiologicalEvent,
+    BiologicalObject,
+    BiologicalProcess,
+    CellTerm,
+    Chemical,
+    KeyEvent,
+    KeyEventRelationship,
+    LifeStage,
+    LifeStageAop,
+    LifeStageKeyEvent,
+    LifeStageKeyEventRelationship,
+    OrganTerm,
+    Sex,
+    Stressor,
+    Synonym,
+    Taxonomy,
+    TaxonomyKeyEvent,
+    TaxonomyKeyEventRelationship,
+)
 
 
 def get_aops(verbose: bool = False) -> pd.DataFrame:
@@ -24,25 +43,42 @@ def get_aops(verbose: bool = False) -> pd.DataFrame:
     -------
     pandas DataFrame
     """
-    stmt = select(
-        Aop,
-        KeyEvent.id.label("key_event_id"),
-        AopKeyEvent.key_event_type,
-        Stressor.name.label("stressor"),
-        AopStressor.evidence.label("stressor_evidence"),
-        LifeStage.life_stage,
-    ).join(
-        AopStressor, Aop.id == AopStressor.aop_hash, isouter=True,
-    ).join(
-        Stressor, isouter=True,
-    ).join(
-        AopKeyEvent, Aop.id == AopKeyEvent.aop_hash, isouter=True,
-    ).join(
-        KeyEvent, isouter=True,
-    ).join(
-        LifeStageAop, Aop.id == LifeStageAop.aop_hash, isouter=True,
-    ).join(
-        LifeStage, isouter=True,
+    stmt = (
+        select(
+            Aop,
+            KeyEvent.id.label("key_event_id"),
+            AopKeyEvent.key_event_type,
+            Stressor.name.label("stressor"),
+            AopStressor.evidence.label("stressor_evidence"),
+            LifeStage.life_stage,
+        )
+        .join(
+            AopStressor,
+            Aop.id == AopStressor.aop_hash,
+            isouter=True,
+        )
+        .join(
+            Stressor,
+            isouter=True,
+        )
+        .join(
+            AopKeyEvent,
+            Aop.id == AopKeyEvent.aop_hash,
+            isouter=True,
+        )
+        .join(
+            KeyEvent,
+            isouter=True,
+        )
+        .join(
+            LifeStageAop,
+            Aop.id == LifeStageAop.aop_hash,
+            isouter=True,
+        )
+        .join(
+            LifeStage,
+            isouter=True,
+        )
     )
 
     if verbose:
@@ -63,20 +99,34 @@ def get_bio_events(verbose: bool = False) -> pd.DataFrame:
     -------
     pandas DataFrame
     """
-    stmt = select(
-        BiologicalEvent.id.label("id"),
-        BiologicalAction.name.label("bio_action"),
-        BiologicalProcess.name.label("bio_process"),
-        BiologicalObject.name.label("bio_object"),
-        KeyEvent.id.label("key_event_id"),
-    ).select_from(BiologicalEvent).join(
-        BiologicalAction, BiologicalAction.id == BiologicalEvent.bio_action_id, isouter=True,
-    ).join(
-        BiologicalProcess, BiologicalProcess.id == BiologicalEvent.bio_process_id, isouter=True,
-    ).join(
-        BiologicalObject, BiologicalObject.id == BiologicalEvent.bio_object_id, isouter=True,
-    ).join(
-        BiologicalEvent.key_events, isouter=True,
+    stmt = (
+        select(
+            BiologicalEvent.id.label("id"),
+            BiologicalAction.name.label("bio_action"),
+            BiologicalProcess.name.label("bio_process"),
+            BiologicalObject.name.label("bio_object"),
+            KeyEvent.id.label("key_event_id"),
+        )
+        .select_from(BiologicalEvent)
+        .join(
+            BiologicalAction,
+            BiologicalAction.id == BiologicalEvent.bio_action_id,
+            isouter=True,
+        )
+        .join(
+            BiologicalProcess,
+            BiologicalProcess.id == BiologicalEvent.bio_process_id,
+            isouter=True,
+        )
+        .join(
+            BiologicalObject,
+            BiologicalObject.id == BiologicalEvent.bio_object_id,
+            isouter=True,
+        )
+        .join(
+            BiologicalEvent.key_events,
+            isouter=True,
+        )
     )
 
     if verbose:
@@ -85,7 +135,9 @@ def get_bio_events(verbose: bool = False) -> pd.DataFrame:
     return pd.read_sql(stmt, con=CONN, index_col="id")
 
 
-def get_key_event_relationships(species: int = None, verbose: bool = False) -> pd.DataFrame:
+def get_key_event_relationships(
+    species: int = None, verbose: bool = False
+) -> pd.DataFrame:
     """Get a table of Key Event Relationships.
 
     Parameters
@@ -99,18 +151,30 @@ def get_key_event_relationships(species: int = None, verbose: bool = False) -> p
     -------
     pandas DataFrame
     """
-    stmt = select(
-        KeyEventRelationship,
-        Taxonomy.tax_id,
-        LifeStage.life_stage,
-    ).join(
-        TaxonomyKeyEventRelationship, KeyEventRelationship.id == TaxonomyKeyEventRelationship.ker_id, isouter=True,
-    ).join(
-        Taxonomy, isouter=True,
-    ).join(
-        LifeStageKeyEventRelationship, KeyEventRelationship.id == LifeStageKeyEventRelationship.ker_id, isouter=True,
-    ).join(
-        LifeStage, isouter=True,
+    stmt = (
+        select(
+            KeyEventRelationship,
+            Taxonomy.tax_id,
+            LifeStage.life_stage,
+        )
+        .join(
+            TaxonomyKeyEventRelationship,
+            KeyEventRelationship.id == TaxonomyKeyEventRelationship.ker_id,
+            isouter=True,
+        )
+        .join(
+            Taxonomy,
+            isouter=True,
+        )
+        .join(
+            LifeStageKeyEventRelationship,
+            KeyEventRelationship.id == LifeStageKeyEventRelationship.ker_id,
+            isouter=True,
+        )
+        .join(
+            LifeStage,
+            isouter=True,
+        )
     )
 
     if species:
@@ -122,11 +186,13 @@ def get_key_event_relationships(species: int = None, verbose: bool = False) -> p
     return pd.read_sql(stmt, con=CONN, index_col="id")
 
 
-def get_key_events(bio_events: bool = False,
-                   stressors: bool = False,
-                   detailed: bool = False,
-                   species: int = None,
-                   verbose: bool = False) -> pd.DataFrame:
+def get_key_events(
+    bio_events: bool = False,
+    stressors: bool = False,
+    detailed: bool = False,
+    species: int = None,
+    verbose: bool = False,
+) -> pd.DataFrame:
     """Get table of key events.
 
     Parameters
@@ -146,54 +212,85 @@ def get_key_events(bio_events: bool = False,
     -------
     pandas DataFrame
     """
-    if any([bio_events, stressors, detailed]):  # If any of these are true then need detailed df
-        stmt = select(
-            KeyEvent.id,
-            KeyEvent.aop_id,
-            KeyEvent.aop_hash,
-            KeyEvent.title,
-            KeyEvent.short_name,
-            KeyEvent.biological_organization_level,
-            CellTerm.name.label("cell_term"),
-            OrganTerm.name.label("organ_term"),
-            Stressor.name.label("stressor_id"),
-            Taxonomy.tax_id,
-            LifeStage.life_stage,
-        ).join(
-            CellTerm, isouter=True,
-        ).join(
-            OrganTerm, isouter=True,
-        ).join(
-            KeyEvent.stressors, isouter=True,
-        ).join(
-            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True,
-        ).join(
-            Taxonomy, isouter=True,
-        ).join(
-            LifeStageKeyEvent, KeyEvent.id == LifeStageKeyEvent.key_event_id, isouter=True,
-        ).join(
-            LifeStage, isouter=True,
+    if any(
+        [bio_events, stressors, detailed]
+    ):  # If any of these are true then need detailed df
+        stmt = (
+            select(
+                KeyEvent.id,
+                KeyEvent.aop_id,
+                KeyEvent.aop_hash,
+                KeyEvent.title,
+                KeyEvent.short_name,
+                KeyEvent.biological_organization_level,
+                CellTerm.name.label("cell_term"),
+                OrganTerm.name.label("organ_term"),
+                Stressor.name.label("stressor_id"),
+                Taxonomy.tax_id,
+                LifeStage.life_stage,
+            )
+            .join(
+                CellTerm,
+                isouter=True,
+            )
+            .join(
+                OrganTerm,
+                isouter=True,
+            )
+            .join(
+                KeyEvent.stressors,
+                isouter=True,
+            )
+            .join(
+                TaxonomyKeyEvent,
+                KeyEvent.id == TaxonomyKeyEvent.key_event_id,
+                isouter=True,
+            )
+            .join(
+                Taxonomy,
+                isouter=True,
+            )
+            .join(
+                LifeStageKeyEvent,
+                KeyEvent.id == LifeStageKeyEvent.key_event_id,
+                isouter=True,
+            )
+            .join(
+                LifeStage,
+                isouter=True,
+            )
         )
 
     else:  # Simplified version
-        stmt = select(
-            KeyEvent.id,
-            KeyEvent.aop_id,
-            KeyEvent.aop_hash,
-            KeyEvent.title,
-            KeyEvent.short_name,
-            KeyEvent.biological_organization_level,
-            CellTerm.name.label("cell_term"),
-            OrganTerm.name.label("organ_term"),
-            Taxonomy.tax_id,
-        ).join(
-            CellTerm, isouter=True,
-        ).join(
-            OrganTerm, isouter=True,
-        ).join(
-            TaxonomyKeyEvent, KeyEvent.id == TaxonomyKeyEvent.key_event_id, isouter=True,
-        ).join(
-            Taxonomy, isouter=True,
+        stmt = (
+            select(
+                KeyEvent.id,
+                KeyEvent.aop_id,
+                KeyEvent.aop_hash,
+                KeyEvent.title,
+                KeyEvent.short_name,
+                KeyEvent.biological_organization_level,
+                CellTerm.name.label("cell_term"),
+                OrganTerm.name.label("organ_term"),
+                Taxonomy.tax_id,
+            )
+            .join(
+                CellTerm,
+                isouter=True,
+            )
+            .join(
+                OrganTerm,
+                isouter=True,
+            )
+            .join(
+                TaxonomyKeyEvent,
+                KeyEvent.id == TaxonomyKeyEvent.key_event_id,
+                isouter=True,
+            )
+            .join(
+                Taxonomy,
+                isouter=True,
+            )
         )
 
     if species:
@@ -210,7 +307,11 @@ def get_key_events(bio_events: bool = False,
 
     if stressors:
         stressor_df = get_stressors()
-        ke_df = ke_df.set_index("stressor_id").join(stressor_df, rsuffix="_stressor").reset_index(drop=True)
+        ke_df = (
+            ke_df.set_index("stressor_id")
+            .join(stressor_df, rsuffix="_stressor")
+            .reset_index(drop=True)
+        )
 
     return ke_df
 
@@ -234,7 +335,8 @@ def get_stressors(verbose: bool = False) -> pd.DataFrame:
         Chemical.name.label("chemical_name"),
         Chemical.casrn.label("chemical_casrn"),
     ).join(
-        Stressor.chemicals, isouter=True,
+        Stressor.chemicals,
+        isouter=True,
     )
 
     if verbose:
