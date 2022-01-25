@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aop2db"
-version = "0.2.5"
+version = "0.2.6"
 description = "AOP2DB - Python parser for converting importing adverse outcome pathway data into a relational database."
 authors = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
 license = "MIT"
