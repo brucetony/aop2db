@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core>=1.0.0" ]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "aop2db"
 version = "0.2.8"
@@ -25,6 +29,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 keywords = ["Biomedical Database"]
+packages = [
+    { include = "aop2db", from="." },
+]
 
 [tool.poetry.urls]
 "Issue Tracker" = "https://github.com/brucetony/aop2db/issues"
@@ -55,14 +62,6 @@ pytest-runner = "^5.1"
 black = "^21.12b0"
 isort = "^5.10.1"
 
-[build-system]
-requires = [
-    "poetry-core>=1.0.0",
-    "setuptools>=51.0.0",
-    "wheel",
-]
-build-backend = "poetry.core.masonry.api"
-
 [tool.black]
 target-version = ['py38', 'py39', 'py310']
 exclude = '''
@@ -87,7 +86,27 @@ combine_as_imports = true
 include_trailing_comma = true
 skip = "apo2db/__init__.py"
 
-[tool.mypy]
-# Import discovery
-mypy_path = "typings"
-files = ["aop2db"]
+
+[tool.flakehell]
+exclude = ["README.rst"]
+format = "colored"
+max_line_length = 119
+show_source = true
+
+[tool.flakehell.plugins]
+flake8-bandit = ["+*", "-A003", "-I202"]
+flake8-bugbear = ["+*"]
+flake8-builtins = ["+*"]
+flake8-comprehensions = ["+*"]
+flake8-darglint = ["+*"]
+flake8-docstrings = ["+*"]
+flake8-eradicate = ["+*"]
+flake8-isort = ["+*"]
+flake8-mutable = ["+*"]
+flake8-pytest-style = ["+*"]
+flake8-spellcheck = ["+*"]
+mccabe = ["+*"]
+pep8-naming = ["+*"]
+pycodestyle = ["+*"]
+pyflakes = ["+*"]
+pylint = ["+*"]

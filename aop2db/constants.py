@@ -1,6 +1,6 @@
 """String definitions."""
 
-from . import LATEST_XML_VERSION
+from .aop.utils import LATEST_XML_VERSION
 
 DATABASE = "DATABASE"
 

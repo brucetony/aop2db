@@ -1,0 +1,25 @@
+[flake8]
+min_python_version = 3.8.0
+ban-relative-imports = true
+format-greedy = 1
+inline-quotes = double
+mypy-init-return = true
+enable-extensions = TC, TC2
+ignore =
+    A003 # class attribute "id" is shadowing a python builtin
+    I202 # Additional newline in a group of imports.
+exclude =
+    .tox,
+    .git,
+    __pycache__,
+    docs/source/conf.py,
+    build,
+    dist,
+    tests/fixtures/*,
+    *.pyc,
+    *.egg-info,
+    .cache,
+    .eggs
+max-complexity = 20
+import-order-style = pycharm
+max-line-length = 119
