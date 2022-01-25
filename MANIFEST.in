@@ -1,8 +1,0 @@
-graft aop2db
-graft docs
-
-prune tests
-prune docs/build
-
-exclude .bumpversion.cfg *.yml tox.ini *.txt
-global-exclude *.py[cod]
