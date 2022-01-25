@@ -3,7 +3,34 @@ name = "aop2db"
 version = "0.2.6"
 description = "AOP2DB - Python parser for converting importing adverse outcome pathway data into a relational database."
 authors = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
+maintainers = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
 license = "MIT"
+
+url = "https://github.com/brucetony/aop2db"
+documentation = "https://aop2db.readthedocs.io/en/latest/"
+readme = "README.rst"
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+keywords = ["Biomedical Database"]
+
+[tool.poetry.urls]
+"Issue Tracker" = "https://github.com/brucetony/aop2db/issues"
+"Documentation" = "https://aop2db.readthedocs.io/en/latest/"
+"Source Code" = "https://github.com/brucetony/aop2db"
+
 
 [tool.poetry.dependencies]
 python = "^3.8"
