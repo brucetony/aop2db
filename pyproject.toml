@@ -6,7 +6,7 @@ authors = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
 maintainers = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
 license = "MIT"
 
-url = "https://github.com/brucetony/aop2db"
+homepage = "https://github.com/brucetony/aop2db"
 documentation = "https://aop2db.readthedocs.io/en/latest/"
 readme = "README.rst"
 
