@@ -1,15 +1,8 @@
-include README.rst
-include LICENSE
-
 graft aop2db
-
 graft docs
+
+prune tests
 prune docs/build
 
-global-exclude  __pycache__
-
-global-exclude *.ipynb
-global-exclude *.json
-global-exclude *.png
+exclude .bumpversion.cfg *.yml tox.ini *.txt
 global-exclude *.py[cod]
-global-exclude *.so
