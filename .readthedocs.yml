@@ -11,6 +11,7 @@ build:
 
 python:
   install:
+#    - requirements: docs/requirements.txt
     - method: pip
       path: .
       extra_requirements:
@@ -19,4 +20,4 @@ python:
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
-   configuration: docs/source/conf.py
+   configuration: docs/conf.py
