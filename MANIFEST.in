@@ -1,15 +1,24 @@
-include README.rst
 include LICENSE
+include *.rst *.txt
 
 graft aop2db
+graft tests
 
 graft docs
 prune docs/build
 
-global-exclude  __pycache__
+exclude .bumpversion.cfg
+exclude .coveragerc
+exclude .flask8
+exclude *.yml
 
+global-exclude  __pycache__
 global-exclude *.ipynb
 global-exclude *.json
 global-exclude *.png
 global-exclude *.py[cod]
 global-exclude *.so
+global-exclude *~
+
+recursive-include docs/source *.py *.rst
+recursive-include docs Makefile *.bat
