@@ -37,6 +37,9 @@ packages = [
     { include = "aop2db", from="." },
 ]
 
+[tool.poetry.scripts]
+aop2db = "aop2db.cli:main"
+
 [tool.poetry.urls]
 "Issue Tracker" = "https://github.com/brucetony/aop2db/issues"
 "Documentation" = "https://aop2db.readthedocs.io/en/latest/"
