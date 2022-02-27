@@ -8,7 +8,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "aop2db"
-version = "0.2.10"
+version = "0.2.11"
 description = "AOP2DB - Python parser for converting importing adverse outcome pathway data into a relational database."
 authors = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
 maintainers = ["Bruce Schultz <bruce.schultz@scai.fraunhofer.de>"]
