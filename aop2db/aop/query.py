@@ -1,6 +1,5 @@
 """Query the AOP tables."""
 import pandas as pd
-
 from sqlalchemy import select
 
 from aop2db.orm.manager import CONN
@@ -113,7 +112,7 @@ def get_bio_events(verbose: bool = False) -> pd.DataFrame:
             BiologicalProcess.name.label("bio_process_name"),
             BiologicalObject.source.label("bio_object_source"),
             BiologicalObject.source_id.label("bio_object_source_id"),
-            BiologicalObject.name.label("bio_object_name")
+            BiologicalObject.name.label("bio_object_name"),
         )
         .select_from(BiologicalEvent)
         .join(

@@ -169,7 +169,7 @@ class TestQuery:
 
     def test_get_bio_events(self):
         """Test the get_bio_events method."""
-        expected_cols = ['bio_action', 'bio_process', 'bio_object', 'key_event_id']
+        expected_cols = ['key_event_id', 'key_event_title', 'bio_action_source', 'bio_action_source_id', 'bio_action_name', 'bio_process_source', 'bio_process_name', 'bio_process_source_id', 'bio_object_source', 'bio_object_source_id', 'bio_object_name']
         self.check_query_results(get_bio_events(), expected_cols)
 
     def test_get_bio_objects(self):
