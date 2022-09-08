@@ -185,7 +185,7 @@ class AopImporter:
             aop[REFERENCES] = aop.pop(REFERENCES)
             statuses = aop.pop("status")
             stressors = aop.pop("aop-stressors", None)
-            kers = aop.pop("key-event-relationships")
+            kers = aop.pop("key-event-relationships", None)
             applicability = aop.pop(APPLICABILITY, None)
 
             kes = {
@@ -242,7 +242,7 @@ class AopImporter:
             if ke_data:
                 if ke_type == "key_events":
                     ke_aop_hashes = [
-                        ke[ID] for ke in self._listify(ke_data["key-event"])
+                        ke["@key-event-id"] for ke in self._listify(ke_data["key-event"])
                     ]
                     ke_objs = [
                         key_event_mapper[ke_aop_hash] for ke_aop_hash in ke_aop_hashes
@@ -278,8 +278,9 @@ class AopImporter:
         stressors = self._listify(stressor_dict["aop-stressor"])
         for stressor in stressors:
             stressor_aop_hash = stressor["@stressor-id"]
+            description = stressor["description"] if "description" in stressor else None
             stressor_asso = AopStressor(
-                description=stressor["description"], evidence=stressor[EVIDENCE]
+                description=description, evidence=stressor[EVIDENCE]
             )
             stressor_asso.stressor = stressor_mapper[stressor_aop_hash]
             aop_entry.stressors.append(stressor_asso)
@@ -332,13 +333,12 @@ class AopImporter:
         ):
             ker[AOP_HASH] = ker.pop(ID)
             ker[REFERENCES] = ker.pop(REFERENCES)
+            ker.pop("applicability")  # Don't want it
             ker = self.__extract_weight_of_evidence_values(ker)
             ker[LAST_MODIFIED] = datetime.fromisoformat(ker.pop(LM_TIMESTAMP, None))
             ker[CREATION] = datetime.fromisoformat(ker.pop(CREATION_TIMESTAMP, None))
-            ker["quantitative_understanding"] = ker.pop("quantitative-understanding")[
-                "description"
-            ]  # Get text
-            applicability = ker.pop("taxonomic-applicability", None)
+            ker["quantitative_understanding"] = ker.pop("quantitative-understanding")["description"]  # Get text
+            taxo_applicability = ker.pop("taxonomic-applicability", None)
             related_kes = ker.pop("title")
 
             # Create KER obj and add up/down stream KEs
@@ -349,8 +349,8 @@ class AopImporter:
             ker_entry.up_event = key_events[related_kes["upstream-id"]]
             ker_entry.down_event = key_events[related_kes["downstream-id"]]
 
-            if applicability:
-                ker_entry = self.__parse_applicability(applicability, ker_entry)
+            if taxo_applicability:
+                ker_entry = self.__parse_applicability(taxo_applicability, ker_entry)
 
             ker_entires.append(ker_entry)
 
@@ -434,6 +434,8 @@ class AopImporter:
             ke[AOP_ID] = self.__get_aop_id(KE_JSON, ke["title"])
             ke[AOP_HASH] = ke.pop(ID)
             ke[REFERENCES] = ke.pop(REFERENCES)
+            ke[LAST_MODIFIED] = datetime.fromisoformat(ke.pop(LM_TIMESTAMP, None))
+            ke[CREATION] = datetime.fromisoformat(ke.pop(CREATION_TIMESTAMP, None))
 
             # Pop out terms with table relationships
             cell_term_data = ke.pop("cell-term", None)

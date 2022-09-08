@@ -230,6 +230,8 @@ class KeyEvent(Base):
     biological_organization_level = Column(String(45))
     description = Column(TEXT)
     measurement_methodology = Column(TEXT)
+    creation = Column(DateTime)
+    last_modified = Column(DateTime)
     references = Column(TEXT)
     evidence_supporting_taxonomic_applicability = Column(TEXT)
 
