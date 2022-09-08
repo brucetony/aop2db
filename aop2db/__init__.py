@@ -2,4 +2,4 @@
 
 __author__ = "Bruce Schultz"
 __email__ = "bruce.schultz@scai.fraunhofer.de"
-__version__ = "0.2.11"
+__version__ = "0.3.0"
