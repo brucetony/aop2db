@@ -3,13 +3,13 @@
 import gzip
 import json
 import logging
-import re
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Optional, Union
-
 import requests
 import xmltodict
+import re
+
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, Optional, Union
 from sqlalchemy import insert
 from tqdm import tqdm
 
@@ -942,13 +942,17 @@ class AopImporter:
     def __download_aop_json():
         """Download the AOP JSON to get AOP IDs."""
         downloaded_files = [file_path.name for file_path in AOP_DIR.iterdir()]
+        remove_before = datetime.now()-timedelta(days=90)  # Redownload if files older than 90 days
+
         for download_path in AOP_JSONS:
             json_file_name = Path(download_path).name
-            if json_file_name not in downloaded_files:
+            file_path = AOP_DIR.joinpath(json_file_name)
+
+            if json_file_name not in downloaded_files or remove_before.timestamp() > file_path.stat().st_mtime:
                 resp = requests.get(download_path)
 
                 if resp.ok:
-                    with open(AOP_DIR.joinpath(json_file_name), "w") as jsonf:
+                    with open(file_path, "w") as jsonf:
                         json.dump(resp.json(), jsonf)
 
                     logger.info(
